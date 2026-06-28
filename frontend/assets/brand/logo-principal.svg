@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 250" width="720" height="250" aria-label="Era uma vez">
+  
+  
+  <g transform="translate(336,20)">
+    <defs><mask id="m"><rect width="48" height="48" fill="#fff"></rect><circle cx="30" cy="20" r="13" fill="#000"></circle></mask></defs>
+    <circle cx="24" cy="24" r="14" fill="#E9B24C" mask="url(#m)"></circle>
+    <path d="M24 5l1.5 3.3 3.6.4-2.7 2.4.8 3.5L24 12.3 20.8 14.6l.8-3.5-2.7-2.4 3.6-.4z" fill="#E9B24C"></path>
+  </g>
+  <text x="360" y="208" text-anchor="middle" font-size="128" class="wm" fill="#FBF5E8">Era uma <tspan fill="#E9B24C">vez</tspan></text>
+</svg>
