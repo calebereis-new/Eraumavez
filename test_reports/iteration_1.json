@@ -1,0 +1,36 @@
+{
+  "summary": "Bug fix VERIFIED. Bottom tab bar icons are no longer clipped vertically. Measured bounding boxes for all 4 tabs (Início, Valores, Universos, Favoritos): tab bar height = 53px, tab cell height = 49px, each SVG icon = 25x25px positioned at y=789.5 with bottom at 814.5, well inside the tab bounds (tab_top=783, tab_bottom=832). No clipping top or bottom on any tab. Labels (Início/Valores/Universos/Favoritos) render fully legible below each icon. Tab bar is fixed at bottom (y=781, bottom=834, viewport=844) with Noite Ameixa (#2A1844) background. Active tab icon turns Dourado Estrela (#E9B24C) — confirmed via aria-selected=true and visual screenshots. Navigation works: tapping each tab goes to /, /valores, /universos, /favoritos. Scrollable container detected (scrollHeight 2188 / 2900 vs viewport 706) so Home content can be scrolled past the tab bar — no permanent occlusion. Non-blocking console warnings observed (see action_items): two duplicate React key errors (EUV-0001, EUV-0012) and deprecated style props (shadow*, pointerEvents).",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": [
+      {"component": "Style props", "issue": "Console warning: 'shadow*' style props are deprecated. Use 'boxShadow'. Reference: somewhere in shared card/shadow styles."},
+      {"component": "Props", "issue": "Console warning: props.pointerEvents is deprecated. Use style.pointerEvents."}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Original tab-bar clipping bug is FIXED — no further action needed for that bug.",
+    "Fix duplicate React keys in lists rendering items with id EUV-0001 and EUV-0012 (likely /app/frontend/app/(tabs)/index.tsx 'Em destaque' or 'Para dormir tranquilo' carousels). Add unique keys.",
+    "Migrate deprecated 'shadow*' style props to 'boxShadow' (or platform-conditional) to silence RN web warnings.",
+    "Replace prop 'pointerEvents' with style.pointerEvents per RN deprecation."
+  ],
+  "critical_code_review_comments": [
+    "/app/frontend/app/(tabs)/_layout.tsx: tab bar height calculation (44 + extraBottom + 20) produces ~53px on web (insets.bottom=0), giving 49px per tab — sufficient room for 25px icon + 11px label without clipping. Good cross-platform sizing using useSafeAreaInsets.",
+    "IconSlot wrapper with flex:1 + center alignment is correctly applied to every tab (including the SVG-based MoonMark). Solid solution.",
+    "MoonMark SVG uses viewBox 0 0 48 48 and is given size=22 by the layout (size ?? 22) but rendered at 25x25 in DOM — likely due to default react-navigation icon size override. Cosmetically fine.",
+    "Tab 'Início' active color is hard-coded to colors.douradoEstrela inside its tabBarIcon callback, while makeIcon() relies on the passed `color`. This works because tabBarActiveTintColor is also douradoEstrela, but is slightly inconsistent. Optional cleanup: also use `color` for MoonMark."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (frontend-only test)", "frontend": "100% for the targeted tab-bar bug"},
+  "seed_data_creation": "None.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Tab-bar clipping bug is resolved at viewport 390x844. If retesting, also try 360x640 (smaller Android), 414x896 (iPhone Pro Max) and 768x1024 (tablet) to ensure the 44+insets formula stays robust. Note: the public URL https://vai-comecar.preview.emergentagent.com has a ~2s splash; wait before querying home-screen testID.",
+  "rca_of_issue": "Original RCA: default React Navigation bottom tab bar height on web was ~49px while icon container padding + label combined exceeded that, clipping the top of icons. Fix in (tabs)/_layout.tsx adds a custom height (baseContent 44 + safe-area bottom + 20 paddingTop), wraps every icon in a flex-centered IconSlot, and tunes tabBarIconStyle/tabBarItemStyle/tabBarLabelStyle so the 25px icon + 11px label both fit cleanly. Verified via DOM bounding boxes and visual screenshots — no clipping on any of the 4 tabs."
+}

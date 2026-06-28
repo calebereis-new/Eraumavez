@@ -1,15 +1,42 @@
 import { Tabs } from 'expo-router';
-import { Platform } from 'react-native';
-import { Heart, Planet, Star, IconProps } from 'phosphor-react-native';
+import { Heart, IconProps, Planet, Star } from 'phosphor-react-native';
 import { ComponentType } from 'react';
+import { Platform, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors, fonts } from '@/src/theme/tokens';
 import { MoonMark } from '@/src/components/brand/MoonMark';
 
+// Wrapper que garante centralização do ícone dentro do slot da tab,
+// independente de plataforma (iOS, Android, Web).
+function IconSlot({ children }: { children: React.ReactNode }) {
+  return (
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: 28,
+      }}
+    >
+      {children}
+    </View>
+  );
+}
+
 export default function TabsLayout() {
+  const insets = useSafeAreaInsets();
+
+  // Altura total = conteúdo (44px) + área segura do dispositivo.
+  const baseContent = 44;
+  const extraBottom = Platform.OS === 'ios' ? Math.max(insets.bottom, 12) : Math.max(insets.bottom, 10);
+  const tabBarHeight = baseContent + extraBottom + 20; // 20 = paddingTop p/ ar
+
   const makeIcon = (Cmp: ComponentType<IconProps>) => {
     const TabIcon = ({ color, size, focused }: { color: string; size: number; focused: boolean }) => (
-      <Cmp size={size ?? 22} color={color} weight={focused ? 'fill' : 'light'} />
+      <IconSlot>
+        <Cmp size={size ?? 22} color={color} weight={focused ? 'fill' : 'light'} />
+      </IconSlot>
     );
     return TabIcon;
   };
@@ -23,11 +50,25 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: colors.noiteAmeixa,
           borderTopColor: 'rgba(246,239,225,0.08)',
-          height: Platform.OS === 'ios' ? 86 : 68,
-          paddingTop: 8,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 10,
+          borderTopWidth: 1,
+          height: tabBarHeight,
+          paddingTop: 10,
+          paddingBottom: extraBottom,
         },
-        tabBarLabelStyle: { fontFamily: fonts.textoBold, fontSize: 11, marginTop: 2 },
+        tabBarItemStyle: {
+          paddingVertical: 2,
+        },
+        tabBarIconStyle: {
+          marginTop: 0,
+          marginBottom: 2,
+        },
+        tabBarLabelStyle: {
+          fontFamily: fonts.textoBold,
+          fontSize: 11,
+          marginTop: 0,
+          marginBottom: 0,
+          includeFontPadding: false,
+        },
       }}
     >
       <Tabs.Screen
@@ -35,7 +76,9 @@ export default function TabsLayout() {
         options={{
           title: 'Início',
           tabBarIcon: ({ color, focused, size }) => (
-            <MoonMark size={size ?? 22} color={focused ? colors.douradoEstrela : color} />
+            <IconSlot>
+              <MoonMark size={size ?? 22} color={focused ? colors.douradoEstrela : color} />
+            </IconSlot>
           ),
         }}
       />
