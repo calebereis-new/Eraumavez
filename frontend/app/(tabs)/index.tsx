@@ -1,7 +1,7 @@
 // Home — saudação calorosa e prateleiras estilo streaming.
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Heart, MagnifyingGlass, Planet, Star } from 'phosphor-react-native';
+import { Heart, Info, MagnifyingGlass, Planet, Star } from 'phosphor-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMemo } from 'react';
 
@@ -49,14 +49,24 @@ export default function Home() {
         subtitle="Qual história hoje?"
         testID="home-header"
         rightSlot={
-          <Pressable
-            onPress={() => router.push('/busca')}
-            style={styles.searchBtn}
-            hitSlop={10}
-            testID="home-search-button"
-          >
-            <MagnifyingGlass size={20} color={colors.cremeLencol} weight="light" />
-          </Pressable>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <Pressable
+              onPress={() => router.push('/sobre')}
+              style={styles.searchBtn}
+              hitSlop={10}
+              testID="home-sobre-button"
+            >
+              <Info size={20} color={colors.cremeLencol} weight="light" />
+            </Pressable>
+            <Pressable
+              onPress={() => router.push('/busca')}
+              style={styles.searchBtn}
+              hitSlop={10}
+              testID="home-search-button"
+            >
+              <MagnifyingGlass size={20} color={colors.cremeLencol} weight="light" />
+            </Pressable>
+          </View>
         }
       />
 

@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Font from 'expo-font';
 
 import { useIconFonts } from '@/src/hooks/use-icon-fonts';
+import { useWebHead } from '@/src/hooks/use-web-head';
 import { NightModeProvider } from '@/src/store/nightMode';
 
 LogBox.ignoreAllLogs(true);
@@ -13,6 +14,7 @@ LogBox.ignoreAllLogs(true);
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  useWebHead();
   const [iconsLoaded, iconsError] = useIconFonts();
   const [appFontsLoaded, setAppFontsLoaded] = useState(false);
 

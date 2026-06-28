@@ -1,27 +1,38 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "Era Uma Vez",
+    "slug": "era-uma-vez",
     "version": "1.0.0",
+    "description": "Histórias curtas para a hora de dormir, que encantam a criança e formam o caráter.",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "frontend",
-    "userInterfaceStyle": "automatic",
+    "scheme": "erauvavez",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.erauvavez.app"
     },
     "android": {
+      "package": "com.erauvavez.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#000000"
+        "backgroundColor": "#2A1844"
       },
       "edgeToEdgeEnabled": true
     },
     "web": {
       "bundler": "metro",
       "output": "single",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "Era Uma Vez",
+      "shortName": "Era Uma Vez",
+      "description": "Histórias curtas para a hora de dormir, que encantam a criança e formam o caráter.",
+      "themeColor": "#2A1844",
+      "backgroundColor": "#2A1844",
+      "lang": "pt-BR",
+      "display": "standalone",
+      "orientation": "portrait"
     },
     "plugins": [
       "expo-router",
@@ -29,9 +40,9 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-image.png",
-          "imageWidth": 200,
+          "imageWidth": 220,
           "resizeMode": "contain",
-          "backgroundColor": "#000000"
+          "backgroundColor": "#2A1844"
         }
       ]
     ],
