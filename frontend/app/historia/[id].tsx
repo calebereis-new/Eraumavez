@@ -1,9 +1,8 @@
 // Tela da HISTÓRIA — a peça principal.
 // Seletor de formato: Ler (adulto), Ler (criança), Ouvir, Assistir.
 // Modo Noite acionável aqui.
-import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useMemo, useState } from 'react';
+import { ComponentType, useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -14,11 +13,28 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  BookOpen,
+  CaretLeft,
+  ChatCircleDots,
+  Headphones,
+  IconProps,
+  Moon,
+  Play,
+  PlayCircle,
+  Smiley,
+  Sparkle,
+  Star,
+} from 'phosphor-react-native';
 
 import { api, Historia, valoresSecundariosArr } from '@/src/api/catalog';
 import { useFavorites } from '@/src/store/favorites';
 import { useNightMode } from '@/src/store/nightMode';
 import { colors, fonts, radius, spacing, universoCor } from '@/src/theme/tokens';
+import { MoonMark } from '@/src/components/brand/MoonMark';
+import { StarrySky } from '@/src/components/brand/StarrySky';
+import { UniverseIcon } from '@/src/components/brand/UniverseIcon';
+import { ValorBadge } from '@/src/components/brand/ValorBadge';
 
 type Formato = 'adulto' | 'crianca' | 'audio' | 'video';
 
@@ -76,81 +92,96 @@ export default function HistoriaScreen() {
 
   return (
     <View style={[styles.root, { backgroundColor: bg }]} testID="historia-screen">
+      <StarrySky seed={`hist-${historia.id}`} density={38} opacity={night ? 0.2 : 0.1} />
       <ScrollView
         contentContainerStyle={{ paddingBottom: 80 + insets.bottom }}
         showsVerticalScrollIndicator={false}
       >
         {/* HERO */}
-        <LinearGradient
-          colors={night ? [colors.violetaCrepusculo, colors.noiteProfunda] : [accent, colors.noiteAmeixa]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.hero, { paddingTop: insets.top + spacing.md }]}
-        >
-          <View style={styles.heroTopRow}>
-            <Pressable onPress={() => router.back()} hitSlop={10} style={styles.iconBtn} testID="historia-back">
-              <Ionicons name="chevron-back" size={22} color={colors.cremeLencol} />
-            </Pressable>
-            <View style={{ flex: 1 }} />
-            <Pressable
-              onPress={toggleNight}
-              style={[styles.iconBtn, night ? styles.iconBtnActive : null]}
-              hitSlop={10}
-              testID="historia-night-toggle"
-            >
-              <Ionicons
-                name={night ? 'moon' : 'moon-outline'}
-                size={20}
-                color={night ? colors.noiteAmeixa : colors.cremeLencol}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => toggleFav(historia.id)}
-              style={[styles.iconBtn, fav ? styles.iconBtnActive : null]}
-              hitSlop={10}
-              testID="historia-fav-toggle"
-            >
-              <Ionicons
-                name={fav ? 'star' : 'star-outline'}
-                size={20}
-                color={fav ? colors.noiteAmeixa : colors.cremeLencol}
-              />
-            </Pressable>
-          </View>
+        <View>
+          <LinearGradient
+            colors={night ? [colors.violetaCrepusculo, colors.noiteProfunda] : [accent, colors.noiteAmeixa]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.hero, { paddingTop: insets.top + spacing.md }]}
+          >
+            <StarrySky seed={`hist-hero-${historia.id}`} density={32} opacity={0.22} />
 
-          <Text style={styles.eraUmaVez}>Era uma vez</Text>
-          <Text style={styles.title}>{historia.titulo}</Text>
+            <View style={styles.heroTopRow}>
+              <Pressable onPress={() => router.back()} hitSlop={10} style={styles.iconBtn} testID="historia-back">
+                <CaretLeft size={20} color={colors.cremeLencol} weight="light" />
+              </Pressable>
+              <View style={{ flex: 1 }} />
+              <Pressable
+                onPress={toggleNight}
+                style={[styles.iconBtn, night ? styles.iconBtnActive : null]}
+                hitSlop={10}
+                testID="historia-night-toggle"
+              >
+                <Moon
+                  size={20}
+                  color={night ? colors.noiteAmeixa : colors.cremeLencol}
+                  weight={night ? 'fill' : 'light'}
+                />
+              </Pressable>
+              <Pressable
+                onPress={() => toggleFav(historia.id)}
+                style={[styles.iconBtn, fav ? styles.iconBtnActive : null]}
+                hitSlop={10}
+                testID="historia-fav-toggle"
+              >
+                <Star
+                  size={20}
+                  color={fav ? colors.noiteAmeixa : colors.cremeLencol}
+                  weight={fav ? 'fill' : 'light'}
+                />
+              </Pressable>
+            </View>
 
-          <View style={styles.metaWrap}>
-            <Badge icon="planet" text={historia.universo} />
-            <Badge icon="bookmark" text={historia.colecao} />
-            <Badge icon="heart" text={historia.valor_principal} highlight />
-            <Badge icon="happy" text={historia.faixa_etaria} />
-            <Badge icon="moon" text={`${historia.duracao_min} min`} />
-            {historia.camada === 'Premium' && <Badge icon="sparkles" text="Premium" gold />}
-          </View>
-        </LinearGradient>
+            <View style={styles.heroIconRow}>
+              <View style={styles.heroIconBubble}>
+                <UniverseIcon universo={historia.universo} size={28} color={colors.cremeLencol} weight="light" />
+              </View>
+              <MoonMark size={28} />
+            </View>
+
+            <Text style={styles.eraUmaVez}>Era uma vez</Text>
+            <Text style={styles.title}>{historia.titulo}</Text>
+
+            <View style={styles.valorRow}>
+              <ValorBadge valor={historia.valor_principal} variant="highlight" />
+            </View>
+
+            <View style={styles.metaWrap}>
+              <Badge Icon={UniverseIconAsCmp(historia.universo)} text={historia.universo} />
+              <Badge Icon={BookOpen} text={historia.colecao} />
+              <Badge Icon={Smiley} text={historia.faixa_etaria} />
+              <BadgeMoon text={`${historia.duracao_min} min`} />
+              {historia.camada === 'Premium' && <Badge Icon={Sparkle} text="Premium" gold />}
+            </View>
+          </LinearGradient>
+        </View>
 
         {/* SELETOR DE FORMATO */}
         <View style={styles.tabs}>
-          <FormatTab label="Ler (adulto)" icon="book" active={formato === 'adulto'} onPress={() => setFormato('adulto')} />
+          <FormatTab label="Ler (adulto)" Icon={BookOpen} active={formato === 'adulto'} onPress={() => setFormato('adulto')} />
           <FormatTab
             label="Ler (criança)"
-            icon="happy"
+            Icon={Smiley}
             active={formato === 'crianca'}
             disabled={!hasCrianca}
             onPress={() => hasCrianca && setFormato('crianca')}
           />
           <FormatTab
             label="Ouvir"
-            icon="headset"
+            Icon={Headphones}
             active={formato === 'audio'}
             disabled={!hasAudio}
             onPress={() => hasAudio && setFormato('audio')}
           />
           <FormatTab
             label="Assistir"
-            icon="play-circle"
+            Icon={PlayCircle}
             active={formato === 'video'}
             disabled={!hasVideo}
             onPress={() => hasVideo && setFormato('video')}
@@ -194,7 +225,7 @@ export default function HistoriaScreen() {
 
           {formato === 'audio' && (
             <View style={styles.player} testID="audio-player">
-              <Ionicons name="headset" size={48} color={colors.douradoEstrela} />
+              <Headphones size={48} color={colors.douradoEstrela} weight="light" />
               <Text style={styles.playerTitle}>Áudio narrado</Text>
               <Text style={styles.playerHint}>
                 {hasAudio
@@ -203,7 +234,7 @@ export default function HistoriaScreen() {
               </Text>
               {hasAudio && (
                 <Pressable style={styles.playBtn} testID="audio-play-btn">
-                  <Ionicons name="play" size={20} color={colors.noiteAmeixa} />
+                  <Play size={18} color={colors.noiteAmeixa} weight="fill" />
                   <Text style={styles.playBtnText}>Tocar</Text>
                 </Pressable>
               )}
@@ -212,7 +243,7 @@ export default function HistoriaScreen() {
 
           {formato === 'video' && (
             <View style={styles.player} testID="video-player">
-              <Ionicons name="play-circle" size={48} color={colors.douradoEstrela} />
+              <PlayCircle size={48} color={colors.douradoEstrela} weight="light" />
               <Text style={styles.playerTitle}>Vídeo da história</Text>
               <Text style={styles.playerHint}>Em breve. Estamos preparando com carinho.</Text>
             </View>
@@ -222,7 +253,7 @@ export default function HistoriaScreen() {
           {historia.pergunta ? (
             <View style={styles.talkCard} testID="pergunta-card">
               <View style={styles.talkHeader}>
-                <Ionicons name="chatbubble-ellipses" size={16} color={colors.douradoEstrela} />
+                <ChatCircleDots size={16} color={colors.douradoEstrela} weight="light" />
                 <Text style={styles.talkTitle}>Para conversar</Text>
               </View>
               <Text style={styles.talkText}>{historia.pergunta}</Text>
@@ -235,10 +266,7 @@ export default function HistoriaScreen() {
               <Text style={styles.valoresLabel}>Esta história também fala de</Text>
               <View style={styles.valoresChips}>
                 {valoresSecundariosArr(historia).map((v) => (
-                  <View key={v} style={styles.valoresChip}>
-                    <Ionicons name="heart" size={10} color={colors.douradoEstrela} />
-                    <Text style={styles.valoresChipText}>{v}</Text>
-                  </View>
+                  <ValorBadge key={v} valor={v} size="sm" variant="on-dark" />
                 ))}
               </View>
             </View>
@@ -251,13 +279,13 @@ export default function HistoriaScreen() {
 
 function FormatTab({
   label,
-  icon,
+  Icon,
   active,
   disabled,
   onPress,
 }: {
   label: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  Icon: ComponentType<IconProps>;
   active: boolean;
   disabled?: boolean;
   onPress: () => void;
@@ -273,10 +301,10 @@ function FormatTab({
       ]}
       testID={`format-tab-${label}`}
     >
-      <Ionicons
-        name={icon}
+      <Icon
         size={16}
         color={active ? colors.noiteAmeixa : disabled ? 'rgba(246,239,225,0.35)' : colors.cremeLencol}
+        weight="light"
       />
       <Text style={[ft.tabText, active ? ft.tabTextActive : null, disabled ? ft.tabTextDisabled : null]}>
         {label}
@@ -287,28 +315,40 @@ function FormatTab({
 }
 
 function Badge({
-  icon,
+  Icon,
   text,
-  highlight,
   gold,
 }: {
-  icon: keyof typeof Ionicons.glyphMap;
+  Icon: ComponentType<IconProps>;
   text: string;
-  highlight?: boolean;
   gold?: boolean;
 }) {
   return (
-    <View style={[badge.b, highlight ? badge.highlight : null, gold ? badge.gold : null]}>
-      <Ionicons
-        name={icon}
-        size={11}
-        color={gold ? colors.noiteAmeixa : colors.cremeLencol}
-      />
+    <View style={[badge.b, gold ? badge.gold : null]}>
+      <Icon size={11} color={gold ? colors.noiteAmeixa : colors.cremeLencol} weight="light" />
       <Text style={[badge.t, gold ? badge.tGold : null]} numberOfLines={1}>
         {text}
       </Text>
     </View>
   );
+}
+
+function BadgeMoon({ text }: { text: string }) {
+  return (
+    <View style={badge.b}>
+      <MoonMark size={10} />
+      <Text style={badge.t} numberOfLines={1}>
+        {text}
+      </Text>
+    </View>
+  );
+}
+
+// Helper para passar o UniverseIcon como tipo de Icon em <Badge />
+function UniverseIconAsCmp(universo: string): ComponentType<IconProps> {
+  const Cmp = (props: IconProps) => <UniverseIcon universo={universo} {...props} color={props.color as string} />;
+  Cmp.displayName = 'UniverseIconAsCmp';
+  return Cmp;
 }
 
 const styles = StyleSheet.create({
@@ -319,8 +359,20 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl,
     borderBottomLeftRadius: radius.lg,
     borderBottomRightRadius: radius.lg,
+    overflow: 'hidden',
   },
   heroTopRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md, gap: spacing.sm },
+  heroIconRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.sm },
+  heroIconBubble: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    borderWidth: 1,
+    borderColor: 'rgba(246,239,225,0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   iconBtn: {
     width: 40,
     height: 40,
@@ -343,6 +395,7 @@ const styles = StyleSheet.create({
     lineHeight: 38,
     marginTop: 2,
   },
+  valorRow: { marginTop: spacing.md, flexDirection: 'row' },
   metaWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.md },
   tabs: {
     flexDirection: 'row',
@@ -407,18 +460,6 @@ const styles = StyleSheet.create({
   valoresWrap: { marginTop: spacing.xl },
   valoresLabel: { fontFamily: fonts.textoExtra, color: colors.cremeLencol, fontSize: 11, letterSpacing: 0.6, marginBottom: spacing.sm },
   valoresChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  valoresChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(233,178,76,0.12)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: radius.pill,
-    borderWidth: 1,
-    borderColor: 'rgba(233,178,76,0.3)',
-  },
-  valoresChipText: { fontFamily: fonts.textoBold, color: colors.cremeLencol, fontSize: 11 },
 });
 
 const ft = StyleSheet.create({
@@ -451,7 +492,6 @@ const badge = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: radius.pill,
   },
-  highlight: { borderWidth: 1, borderColor: colors.douradoEstrela },
   gold: { backgroundColor: colors.douradoEstrela },
   t: { fontFamily: fonts.textoBold, color: colors.cremeLencol, fontSize: 11 },
   tGold: { color: colors.noiteAmeixa },

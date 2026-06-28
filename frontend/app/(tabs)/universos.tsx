@@ -2,11 +2,13 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { CaretRight } from 'phosphor-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useMemo } from 'react';
 
 import { AppHeader } from '@/src/components/AppHeader';
+import { StarrySky } from '@/src/components/brand/StarrySky';
+import { UniverseIcon } from '@/src/components/brand/UniverseIcon';
 import { useCatalog } from '@/src/hooks/use-catalog';
 import { colors, fonts, radius, spacing, universoCor } from '@/src/theme/tokens';
 
@@ -22,6 +24,7 @@ export default function Universos() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]} testID="universos-screen">
+      <StarrySky seed="universos-bg" density={36} opacity={0.12} />
       <AppHeader greeting="Universos" subtitle="Mundos onde tudo pode acontecer" />
       <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingBottom: 120 }} showsVerticalScrollIndicator={false}>
         {universos.map((uni) => {
@@ -38,6 +41,10 @@ export default function Universos() {
                 end={{ x: 1, y: 1 }}
                 style={styles.universeHeader}
               >
+                <StarrySky seed={`uni-${uni}`} density={22} opacity={0.22} />
+                <View style={styles.universeIconBubble}>
+                  <UniverseIcon universo={uni} size={26} color={colors.cremeLencol} weight="light" />
+                </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.universeTitle}>{uni}</Text>
                   <Text style={styles.universeMeta}>
@@ -52,7 +59,7 @@ export default function Universos() {
                   testID={`universo-open-${uni}`}
                 >
                   <Text style={styles.openBtnText}>Abrir</Text>
-                  <Ionicons name="chevron-forward" size={14} color={colors.noiteAmeixa} />
+                  <CaretRight size={12} color={colors.noiteAmeixa} weight="bold" />
                 </Pressable>
               </LinearGradient>
               <View style={styles.collectionList}>
@@ -73,7 +80,7 @@ export default function Universos() {
                       {c}
                     </Text>
                     <Text style={styles.collectionCount}>{n}</Text>
-                    <Ionicons name="chevron-forward" size={14} color={colors.lilasSonho} />
+                    <CaretRight size={12} color={colors.lilasSonho} weight="light" />
                   </Pressable>
                 ))}
               </View>
@@ -92,6 +99,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: spacing.md,
+    overflow: 'hidden',
+  },
+  universeIconBubble: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0,0,0,0.28)',
+    borderWidth: 1,
+    borderColor: 'rgba(246,239,225,0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.sm,
   },
   universeTitle: { fontFamily: fonts.titulo, color: colors.cremeLencol, fontSize: 22 },
   universeMeta: { fontFamily: fonts.texto, color: 'rgba(246,239,225,0.85)', fontSize: 12, marginTop: 2 },

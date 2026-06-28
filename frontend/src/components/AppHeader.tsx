@@ -1,20 +1,25 @@
-// Cabeçalho recorrente do app.
+// Cabeçalho recorrente do app. Mostra o wordmark "Era uma vez" como logo,
+// com saudação e subtítulo opcionais.
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { CaretLeft } from 'phosphor-react-native';
 
 import { colors, fonts, radius, spacing } from '@/src/theme/tokens';
+import { MoonMark } from './brand/MoonMark';
+import { Wordmark } from './brand/Wordmark';
 
 export function AppHeader({
   greeting,
   subtitle,
   showBack,
+  showLogo,
   rightSlot,
   testID,
 }: {
   greeting?: string;
   subtitle?: string;
   showBack?: boolean;
+  showLogo?: boolean;
   rightSlot?: React.ReactNode;
   testID?: string;
 }) {
@@ -24,16 +29,22 @@ export function AppHeader({
       <View style={styles.row}>
         {showBack ? (
           <Pressable onPress={() => router.back()} hitSlop={10} style={styles.iconBtn} testID="header-back">
-            <Ionicons name="chevron-back" size={22} color={colors.cremeLencol} />
+            <CaretLeft size={20} color={colors.cremeLencol} weight="light" />
           </Pressable>
         ) : (
           <View style={styles.logoMark}>
-            <Ionicons name="moon" size={18} color={colors.douradoEstrela} />
+            <MoonMark size={22} />
           </View>
         )}
         <View style={{ flex: 1, marginLeft: spacing.sm }}>
-          {greeting ? <Text style={styles.greet}>{greeting}</Text> : null}
-          {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+          {showLogo ? (
+            <Wordmark width={160} />
+          ) : (
+            <>
+              {greeting ? <Text style={styles.greet}>{greeting}</Text> : null}
+              {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+            </>
+          )}
         </View>
         {rightSlot}
       </View>
@@ -58,10 +69,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logoMark: {
-    width: 40,
-    height: 40,
+    width: 42,
+    height: 42,
     borderRadius: radius.pill,
-    backgroundColor: 'rgba(233,178,76,0.14)',
+    backgroundColor: 'rgba(233,178,76,0.12)',
     borderWidth: 1,
     borderColor: 'rgba(233,178,76,0.45)',
     alignItems: 'center',

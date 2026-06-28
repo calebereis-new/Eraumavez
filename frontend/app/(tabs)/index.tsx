@@ -1,12 +1,13 @@
 // Home — saudação calorosa e prateleiras estilo streaming.
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Heart, MagnifyingGlass, Planet, Star } from 'phosphor-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMemo } from 'react';
 
 import { AppHeader } from '@/src/components/AppHeader';
 import { Shelf } from '@/src/components/Shelf';
+import { StarrySky } from '@/src/components/brand/StarrySky';
 import { useCatalog } from '@/src/hooks/use-catalog';
 import {
   curtas,
@@ -42,6 +43,7 @@ export default function Home() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]} testID="home-screen">
+      <StarrySky seed="home-bg" density={42} opacity={0.14} />
       <AppHeader
         greeting={`${saudacao()}!`}
         subtitle="Qual história hoje?"
@@ -53,7 +55,7 @@ export default function Home() {
             hitSlop={10}
             testID="home-search-button"
           >
-            <Ionicons name="search" size={20} color={colors.cremeLencol} />
+            <MagnifyingGlass size={20} color={colors.cremeLencol} weight="light" />
           </Pressable>
         }
       />
@@ -81,7 +83,7 @@ export default function Home() {
               style={[styles.shortcut, { backgroundColor: colors.violetaCrepusculo }]}
               testID="shortcut-valores"
             >
-              <Ionicons name="heart" size={18} color={colors.douradoEstrela} />
+              <Heart size={18} color={colors.douradoEstrela} weight="light" />
               <Text style={styles.shortcutText}>Por valor</Text>
             </Pressable>
             <Pressable
@@ -89,7 +91,7 @@ export default function Home() {
               style={[styles.shortcut, { backgroundColor: colors.violetaCrepusculo }]}
               testID="shortcut-universos"
             >
-              <Ionicons name="planet" size={18} color={colors.douradoEstrela} />
+              <Planet size={18} color={colors.douradoEstrela} weight="light" />
               <Text style={styles.shortcutText}>Por universo</Text>
             </Pressable>
             <Pressable
@@ -97,7 +99,7 @@ export default function Home() {
               style={[styles.shortcut, { backgroundColor: colors.violetaCrepusculo }]}
               testID="shortcut-favoritos"
             >
-              <Ionicons name="star" size={18} color={colors.douradoEstrela} />
+              <Star size={18} color={colors.douradoEstrela} weight="light" />
               <Text style={styles.shortcutText}>Favoritos</Text>
             </Pressable>
           </View>

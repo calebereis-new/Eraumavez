@@ -2,7 +2,7 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { CaretRight, Star } from 'phosphor-react-native';
 import { useMemo } from 'react';
 
 import { AppHeader } from '@/src/components/AppHeader';
@@ -42,7 +42,7 @@ export default function Valores() {
             testID={`valor-row-${item.valor}`}
           >
             <View style={styles.icon}>
-              <Ionicons name="heart" size={16} color={colors.douradoEstrela} />
+              <Star size={14} color={colors.douradoEstrela} weight="fill" />
             </View>
             <Text style={styles.label} numberOfLines={1}>
               {item.valor}
@@ -50,7 +50,7 @@ export default function Valores() {
             <View style={styles.countBadge}>
               <Text style={styles.countText}>{item.count}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.lilasSonho} />
+            <CaretRight size={16} color={colors.lilasSonho} weight="light" />
           </Pressable>
         )}
         ListEmptyComponent={

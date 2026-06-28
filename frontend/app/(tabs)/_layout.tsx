@@ -1,13 +1,22 @@
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
+import { Heart, Planet, Star, IconProps } from 'phosphor-react-native';
+import { ComponentType } from 'react';
 
 import { colors, fonts } from '@/src/theme/tokens';
+import { MoonMark } from '@/src/components/brand/MoonMark';
 
 export default function TabsLayout() {
+  const makeIcon = (Cmp: ComponentType<IconProps>) => {
+    const TabIcon = ({ color, size, focused }: { color: string; size: number; focused: boolean }) => (
+      <Cmp size={size ?? 22} color={color} weight={focused ? 'fill' : 'light'} />
+    );
+    return TabIcon;
+  };
+
   return (
     <Tabs
-      screenOptions={({ route }) => ({
+      screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.douradoEstrela,
         tabBarInactiveTintColor: colors.lilasSonho,
@@ -19,20 +28,20 @@ export default function TabsLayout() {
           paddingBottom: Platform.OS === 'ios' ? 28 : 10,
         },
         tabBarLabelStyle: { fontFamily: fonts.textoBold, fontSize: 11, marginTop: 2 },
-        tabBarIcon: ({ color, focused, size }) => {
-          let name: keyof typeof Ionicons.glyphMap = 'home';
-          if (route.name === 'index') name = focused ? 'moon' : 'moon-outline';
-          else if (route.name === 'valores') name = focused ? 'heart' : 'heart-outline';
-          else if (route.name === 'universos') name = focused ? 'planet' : 'planet-outline';
-          else if (route.name === 'favoritos') name = focused ? 'star' : 'star-outline';
-          return <Ionicons name={name} size={size ?? 22} color={color} />;
-        },
-      })}
+      }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Início' }} />
-      <Tabs.Screen name="valores" options={{ title: 'Valores' }} />
-      <Tabs.Screen name="universos" options={{ title: 'Universos' }} />
-      <Tabs.Screen name="favoritos" options={{ title: 'Favoritos' }} />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Início',
+          tabBarIcon: ({ color, focused, size }) => (
+            <MoonMark size={size ?? 22} color={focused ? colors.douradoEstrela : color} />
+          ),
+        }}
+      />
+      <Tabs.Screen name="valores" options={{ title: 'Valores', tabBarIcon: makeIcon(Heart) }} />
+      <Tabs.Screen name="universos" options={{ title: 'Universos', tabBarIcon: makeIcon(Planet) }} />
+      <Tabs.Screen name="favoritos" options={{ title: 'Favoritos', tabBarIcon: makeIcon(Star) }} />
     </Tabs>
   );
 }
