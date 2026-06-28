@@ -31,10 +31,18 @@ export default function Home() {
   const { stories, loading, error } = useCatalog();
 
   const destaque = useMemo(() => destaques(stories), [stories]);
-  const paraDormir = useMemo(
-    () => historiasPorValor(stories, 'Humildade').concat(historiasPorValor(stories, 'Gratidão')),
-    [stories],
-  );
+  const paraDormir = useMemo(() => {
+    const ids = new Set<string>();
+    const out = [
+      ...historiasPorValor(stories, 'Humildade'),
+      ...historiasPorValor(stories, 'Gratidão'),
+    ].filter((h) => {
+      if (ids.has(h.id)) return false;
+      ids.add(h.id);
+      return true;
+    });
+    return out;
+  }, [stories]);
   const rapidas = useMemo(() => curtas(stories, 3), [stories]);
   const biblicas = useMemo(() => historiasPorUniverso(stories, 'Bíblicas'), [stories]);
   const herois = useMemo(() => historiasPorUniverso(stories, 'Super-heróis'), [stories]);
