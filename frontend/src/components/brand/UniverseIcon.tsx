@@ -1,7 +1,7 @@
 // Ícone-tema de cada universo (Phosphor "Light" para traço fino consistente).
 import {
   BookOpen,
-  Castle,
+  CastleTurret as Castle,
   Compass,
   Crown,
   House,
