@@ -25,8 +25,8 @@ export function NightModeProvider({ children }: { children: React.ReactNode }) {
       try {
         const raw = await AsyncStorage.getItem(KEY);
         if (raw === '1') setNightState(true);
-      } catch {
-        // ignore
+      } catch (err) {
+        console.warn('[nightMode] failed to read AsyncStorage', err);
       }
     })();
   }, []);

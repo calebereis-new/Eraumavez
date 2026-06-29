@@ -179,8 +179,8 @@ export function useWebHead() {
     try {
       for (const t of TAGS) ensureTag(t);
       injectSplash();
-    } catch {
-      // ignore — não bloqueia o app
+    } catch (err) {
+      console.warn('[useWebHead] failed to inject', err);
     }
   }, []);
 }

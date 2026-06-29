@@ -20,8 +20,8 @@ export function useSafeBottom(): number {
       const v = parseInt(cs.paddingBottom || '0', 10) || 0;
       probe.remove();
       setWebInset(v);
-    } catch {
-      // ignore
+    } catch (err) {
+      console.warn('[useSafeBottom] probe failed', err);
     }
   }, []);
 

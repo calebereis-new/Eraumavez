@@ -28,7 +28,8 @@ export default function RootLayout() {
           Nunito_700Bold: require('../assets/fonts/Nunito-Bold.ttf'),
           Nunito_800ExtraBold: require('../assets/fonts/Nunito-ExtraBold.ttf'),
         });
-      } catch {
+      } catch (err) {
+        console.warn('[RootLayout] font loading failed, using fallbacks', err);
         // se cair, seguimos com fallback de sistema
       } finally {
         setAppFontsLoaded(true);
