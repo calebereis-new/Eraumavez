@@ -1,0 +1,34 @@
+{
+  "summary": "Frontend-only test on iPhone iOS 17 UA simulation (viewport 390x844). PRIMARY BUG (tab bar labels clipped on iPhone) is VERIFIED FIXED with the new custom BottomBar. Catalog of 50 stories and the new compact/standardized cards are also VERIFIED. Tab bar measurements (via DOM getBoundingClientRect on [data-testid=\"bottom-tab-bar\"]): height=92px, paddingTop=12px, paddingBottom=32px, top=752, bottom=844 — fully within viewport. All 4 tabs have testID tab-{index|valores|universos|favoritos}, each ~95.5x47px, with labels 'Início', 'Valores', 'Universos', 'Favoritos' rendered intact at y=797 (h=15px) — none clipped. Active label/icon dourado rgb(233,178,76)=#E9B24C verified after tapping Valores; inactive labels are lilás rgb(200,178,230)=#C8B2E6. Tab navigation works: each tap changes URL to /valores, /universos, /favoritos and back to /. Catalog: /api/meta returns total:50 ✓. Home displays 96 card instances across 7 shelves (destaque, dormir, rapidas, biblicas, herois, princesas, animais). All cards measured 122x184 (size='md') — uniqueWidths=[122], uniqueHeights=[184] ✓ no size variation between shelves. 2 full shelves above the tab bar (shelf-destaque bottom=380 and shelf-dormir bottom=640, both < tab bar top=752); third shelf (rapidas) is partially visible promoting scroll. Each shelf shows ~2.5 cards horizontally (visible in screenshot). No horizontal overflow (body.scrollWidth=390 = window.innerWidth=390). On /valor/Humildade: StoryGrid renders 3 columns of size='sm' cards (114x172), rowCounts=[3,3,3] ✓. Carry-over console warning: 'props.pointerEvents is deprecated' (non-blocking, from prior iterations). DEVIATION FOUND on /universo/Animais: NOT a 3-column grid — uses horizontal Shelf rows of size='md' cards (122px wide) grouped by collections ('Animais da fazenda', 'Animais da floresta', 'Animais do mar'). The request stated 'Universo detalhe' should render 3 columns of sm cards; current implementation uses collection-grouped horizontal shelves. May be a deliberate UX choice (collections inside the universe) but should be confirmed by main agent.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "Universo detail page", "issue": "Per the review request, Universo detail (e.g. /universo/Animais) should render a 3-column grid of size='sm' cards via StoryGrid. Actual implementation uses horizontal Shelf rows of size='md' cards (122x184) grouped by collections (Animais da fazenda / floresta / mar). If this is the intended UX (collections), update the request expectation; otherwise replace the inner shelves with StoryGrid (3-col, sm). Reference: /app/frontend/app/universo/[universo].tsx (and verify it's NOT using StoryGrid).", "affected_testIDs": ["story-card-*"]}
+    ],
+    "design_issues": [],
+    "react_native_issues": [
+      {"component": "Props.pointerEvents", "issue": "Carry-over console warning at app boot: 'props.pointerEvents is deprecated. Use style.pointerEvents'. Reference: /app/frontend/src/components/StoryCard.tsx (heroIconWrap, moonCorner) and possibly other <View pointerEvents=\"none\"> usages. Already has style helper `styles.noPointer` — should migrate to style.pointerEvents in the StyleSheet."}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "PRIMARY BUG VERIFIED FIXED: tab bar height=92px on iPhone UA, all 4 labels (Início/Valores/Universos/Favoritos) fully visible, paddingBottom=32px reserves home indicator area. No further action needed.",
+    "CONFIRM design intent for /universo/[name]: should it be a 3-column StoryGrid (per request) or horizontal shelves grouped by collections (current)? Currently it uses Shelf rows with md cards (122px), NOT the 3-col sm grid documented in the request.",
+    "Optional cleanup: migrate `<View pointerEvents=\"none\">` to `style={{ pointerEvents: 'none' }}` in StoryCard.tsx (and audit any other usages) to silence the RN-web deprecation warning seen on boot."
+  ],
+  "critical_code_review_comments": [
+    "/app/frontend/src/components/BottomBar.tsx is correctly wired via Tabs.tabBar prop and computes total height = PAD_TOP(12) + ICON_BOX(28) + GAP(4) + LABEL_H(16) + max(safeBottom,10) + 4 = 74 + max(safeBottom,10). On iPhone UA, useSafeBottom returns max(0,28)=28 → total=74+28=102 expected. Measured 92px on web preview. The difference (10px) likely comes from a 24px clamp branch elsewhere or the safe-area inset being applied at a different level — non-blocking, height is still >=70px and labels are not clipped.",
+    "BottomBar uses testID='bottom-tab-bar' and per-tab testID='tab-{name}' — matches request. Active color uses colors.douradoEstrela (#E9B24C) and inactive colors.lilasSonho — verified at runtime.",
+    "StoryCard DIMS map: sm=114x172, md=122x184, lg=138x208 — confirmed correct sizes. Home uses size='md' on all 7 shelves → all cards identical (122x184) as required.",
+    "StoryGrid uses numColumns=3 + size='sm' (114x172) → 3 cards × 114 + 2 gaps(spacing.sm) + 2 paddingHorizontal(spacing.md) fits within 390px ✓ (verified at /valor/Humildade with rowCounts=[3,3,3]).",
+    "Universo detail screen does NOT consume StoryGrid (3-col layout) — it uses Shelf horizontal lists per collection. Either the request description is inaccurate or the screen needs to be updated. Worth a confirmation."
+  ],
+  "updated_files": [],
+  "success_rate": { "backend": "N/A (frontend-only — quick /api/meta probe = 50 stories OK)", "frontend": "100% on primary bug + cards uniformity + 50 stories + tab nav; 1 deviation flagged on universo detail layout vs request" },
+  "seed_data_creation": "None.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "To simulate iPhone PWA: page.add_init_script that overrides navigator.userAgent to iPhone iOS17 string BEFORE goto. Container testID for the tab bar is 'bottom-tab-bar' (was [role=tablist] in prior iterations). Each tab is 'tab-{routeName}' where routeName ∈ {index, valores, universos, favoritos}. Cards have testID story-card-{id}. /valor/{name} renders the 3-col StoryGrid (sm 114x172). /universo/{name} renders horizontal Shelf rows (md 122x184) — IF that screen layout needs to be a 3-col grid, retest after main agent fix.",
+  "rca_of_issue": "Primary bug (tab bar labels cut off on iPhone) is fully resolved by the new custom BottomBar component (renders via Tabs.tabBar prop, computes height deterministically from PAD_TOP+ICON_BOX+GAP+LABEL_H+max(safeBottom,10)+4). The previous iteration relied on React Navigation defaults which collapsed the bar height in iPhone PWA. The new BottomBar measured 92px with 32px bottom padding and all 4 labels intact — no further mitigation required."
+}

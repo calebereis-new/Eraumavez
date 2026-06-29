@@ -223,8 +223,9 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: spacing.lg,
-    justifyContent: 'space-between',
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
+    rowGap: spacing.md,
   },
   empty: {
     fontFamily: fonts.texto,

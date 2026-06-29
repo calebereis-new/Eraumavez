@@ -26,10 +26,10 @@ export function StoryGrid({
     <FlatList
       data={stories}
       keyExtractor={(it) => it.id}
-      numColumns={2}
-      columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: spacing.lg }}
-      contentContainerStyle={{ paddingBottom: 140, gap: spacing.md }}
-      renderItem={({ item }) => <StoryCard story={item} size="md" />}
+      numColumns={3}
+      columnWrapperStyle={{ paddingHorizontal: spacing.md, gap: spacing.sm }}
+      contentContainerStyle={{ paddingBottom: 140, rowGap: spacing.md }}
+      renderItem={({ item }) => <StoryCard story={item} size="sm" />}
       ListHeaderComponent={
         <LinearGradient
           colors={[accent, colors.noiteAmeixa]}

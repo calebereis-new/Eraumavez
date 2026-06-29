@@ -17,10 +17,12 @@ import { ValorBadge } from './brand/ValorBadge';
 
 type Size = 'sm' | 'md' | 'lg';
 
+// Cards mais compactos e padronizados. Diferença sutil de tamanho para hierarquia
+// (destaque um pouco maior), mas todos com a mesma proporção/aspecto.
 const DIMS: Record<Size, { w: number; h: number; topH: number; titleSize: number }> = {
-  sm: { w: 144, h: 210, topH: 100, titleSize: 14 },
-  md: { w: 168, h: 244, topH: 116, titleSize: 17 },
-  lg: { w: 208, h: 296, topH: 140, titleSize: 20 },
+  sm: { w: 114, h: 172, topH: 82, titleSize: 13 },
+  md: { w: 122, h: 184, topH: 88, titleSize: 14 },
+  lg: { w: 138, h: 208, topH: 100, titleSize: 15 },
 };
 
 export function StoryCard({
@@ -60,17 +62,18 @@ export function StoryCard({
             />
             <StarrySky seed={`tc-${story.id}`} density={size === 'sm' ? 14 : 22} opacity={0.45} starColor={colors.cremeLencol} />
             {/* ícone-tema grande como arte de fundo */}
+            {/* ícone-tema grande como arte de fundo */}
             <View style={[styles.heroIconWrap, styles.noPointer, { right: -8, bottom: -6 }]}>
               <UniverseIcon
                 universo={story.universo}
-                size={size === 'lg' ? 110 : size === 'md' ? 92 : 76}
+                size={size === 'lg' ? 78 : size === 'md' ? 70 : 64}
                 color="rgba(246,239,225,0.5)"
                 weight="light"
               />
             </View>
             {/* lua-berço no canto */}
             <View style={[styles.moonCorner, styles.noPointer]}>
-              <MoonMark size={size === 'sm' ? 16 : 18} />
+              <MoonMark size={size === 'sm' ? 14 : 16} />
             </View>
           </>
         )}
@@ -129,17 +132,17 @@ const styles = StyleSheet.create({
   bottom: {
     flex: 1,
     backgroundColor: colors.cremeLencol,
-    paddingHorizontal: spacing.md,
-    paddingTop: 10,
-    paddingBottom: 12,
+    paddingHorizontal: 10,
+    paddingTop: 8,
+    paddingBottom: 8,
     justifyContent: 'space-between',
   },
   eraUmaVez: {
     fontFamily: fonts.tituloNarrativa,
     color: colors.douradoEstrela,
-    fontSize: 12,
-    letterSpacing: 0.4,
-    marginBottom: 2,
+    fontSize: 10,
+    letterSpacing: 0.3,
+    marginBottom: 1,
   },
   title: {
     fontFamily: fonts.titulo,
@@ -150,8 +153,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 8,
-    gap: 6,
+    marginTop: 6,
+    gap: 4,
   },
   timeBadge: {
     flexDirection: 'row',

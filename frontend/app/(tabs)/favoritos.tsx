@@ -40,10 +40,10 @@ export default function FavoritosScreen() {
         <FlatList
           data={favStories}
           keyExtractor={(it) => it.id}
-          numColumns={2}
-          columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: spacing.lg }}
-          contentContainerStyle={{ paddingTop: spacing.md, paddingBottom: 120, gap: spacing.md }}
-          renderItem={({ item }) => <StoryCard story={item} size="md" />}
+          numColumns={3}
+          columnWrapperStyle={{ paddingHorizontal: spacing.md, gap: spacing.sm }}
+          contentContainerStyle={{ paddingTop: spacing.md, paddingBottom: 120, rowGap: spacing.md }}
+          renderItem={({ item }) => <StoryCard story={item} size="sm" />}
         />
       )}
     </View>

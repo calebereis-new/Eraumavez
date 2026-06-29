@@ -126,26 +126,27 @@ export default function Home() {
             title="Em destaque"
             subtitle="Histórias que abrem o coração"
             stories={destaque}
-            size="lg"
+            size="md"
             testID="shelf-destaque"
           />
           <Shelf
             title="Para dormir tranquilo"
             subtitle="Quietude antes do sono"
             stories={paraDormir.length ? paraDormir : destaque.slice(0, 6)}
+            size="md"
             testID="shelf-dormir"
           />
           <Shelf
             title="Histórias rápidas"
             subtitle="Em até 3 minutinhos"
             stories={rapidas}
-            size="sm"
+            size="md"
             testID="shelf-rapidas"
           />
-          <Shelf title="Histórias Bíblicas" stories={biblicas} testID="shelf-biblicas" />
-          <Shelf title="Super-heróis" stories={herois} testID="shelf-herois" />
-          <Shelf title="Princesas e Reinos" stories={princesas} testID="shelf-princesas" />
-          <Shelf title="Animais" stories={animais} testID="shelf-animais" />
+          <Shelf title="Histórias Bíblicas" stories={biblicas} size="md" testID="shelf-biblicas" />
+          <Shelf title="Super-heróis" stories={herois} size="md" testID="shelf-herois" />
+          <Shelf title="Princesas e Reinos" stories={princesas} size="md" testID="shelf-princesas" />
+          <Shelf title="Animais" stories={animais} size="md" testID="shelf-animais" />
         </ScrollView>
       )}
     </View>
