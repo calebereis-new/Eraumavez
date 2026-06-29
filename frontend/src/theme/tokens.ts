@@ -70,10 +70,9 @@ export const radius = {
 
 export const shadows = {
   card: {
-    shadowColor: '#000',
-    shadowOpacity: 0.35,
-    shadowOffset: { width: 0, height: 6 },
-    shadowRadius: 14,
+    // Versão moderna (web + RN >=0.76)
+    boxShadow: '0 6px 14px rgba(0, 0, 0, 0.35)',
+    // Fallback Android
     elevation: 6,
   },
 };

@@ -60,7 +60,7 @@ export function StoryCard({
             />
             <StarrySky seed={`tc-${story.id}`} density={size === 'sm' ? 14 : 22} opacity={0.45} starColor={colors.cremeLencol} />
             {/* ícone-tema grande como arte de fundo */}
-            <View style={[styles.heroIconWrap, { right: -8, bottom: -6 }]} pointerEvents="none">
+            <View style={[styles.heroIconWrap, styles.noPointer, { right: -8, bottom: -6 }]}>
               <UniverseIcon
                 universo={story.universo}
                 size={size === 'lg' ? 110 : size === 'md' ? 92 : 76}
@@ -69,7 +69,7 @@ export function StoryCard({
               />
             </View>
             {/* lua-berço no canto */}
-            <View style={styles.moonCorner} pointerEvents="none">
+            <View style={[styles.moonCorner, styles.noPointer]}>
               <MoonMark size={size === 'sm' ? 16 : 18} />
             </View>
           </>
@@ -122,6 +122,7 @@ const styles = StyleSheet.create({
     ...shadows.card,
   },
   top: { width: '100%', overflow: 'hidden', position: 'relative' },
+  noPointer: { pointerEvents: 'none' },
   moonCorner: { position: 'absolute', top: 10, left: 10 },
   heroIconWrap: { position: 'absolute' },
   divider: { height: 2, backgroundColor: colors.douradoEstrela },
