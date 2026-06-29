@@ -31,6 +31,6 @@
   "seed_data_creation": "None.",
   "retest_needed": false,
   "should_main_agent_self_test": true,
-  "context_for_next_testing_agent": "Tab-bar clipping bug is resolved at viewport 390x844. If retesting, also try 360x640 (smaller Android), 414x896 (iPhone Pro Max) and 768x1024 (tablet) to ensure the 44+insets formula stays robust. Note: the public URL https://vai-comecar.preview.emergentagent.com has a ~2s splash; wait before querying home-screen testID.",
+  "context_for_next_testing_agent": "Tab-bar clipping bug is resolved at viewport 390x844. If retesting, also try 360x640 (smaller Android), 414x896 (iPhone Pro Max) and 768x1024 (tablet) to ensure the 44+insets formula stays robust. Note: the public URL https://dormir-stories.preview.emergentagent.com has a ~2s splash; wait before querying home-screen testID.",
   "rca_of_issue": "Original RCA: default React Navigation bottom tab bar height on web was ~49px while icon container padding + label combined exceeded that, clipping the top of icons. Fix in (tabs)/_layout.tsx adds a custom height (baseContent 44 + safe-area bottom + 20 paddingTop), wraps every icon in a flex-centered IconSlot, and tunes tabBarIconStyle/tabBarItemStyle/tabBarLabelStyle so the 25px icon + 11px label both fit cleanly. Verified via DOM bounding boxes and visual screenshots — no clipping on any of the 4 tabs."
 }
