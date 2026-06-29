@@ -2,13 +2,11 @@ import { Tabs } from 'expo-router';
 import { Heart, IconProps, Planet, Star } from 'phosphor-react-native';
 import { ComponentType } from 'react';
 import { Platform, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors, fonts } from '@/src/theme/tokens';
 import { MoonMark } from '@/src/components/brand/MoonMark';
+import { useSafeBottom } from '@/src/hooks/use-safe-bottom';
 
-// Wrapper que garante centralização do ícone dentro do slot da tab,
-// independente de plataforma (iOS, Android, Web).
 function IconSlot({ children }: { children: React.ReactNode }) {
   return (
     <View
@@ -16,7 +14,7 @@ function IconSlot({ children }: { children: React.ReactNode }) {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: 28,
+        minHeight: 30,
       }}
     >
       {children}
@@ -25,12 +23,14 @@ function IconSlot({ children }: { children: React.ReactNode }) {
 }
 
 export default function TabsLayout() {
-  const insets = useSafeAreaInsets();
+  const safeBottom = useSafeBottom();
 
-  // Altura total = conteúdo (44px) + área segura do dispositivo.
-  const baseContent = 44;
-  const extraBottom = Platform.OS === 'ios' ? Math.max(insets.bottom, 12) : Math.max(insets.bottom, 10);
-  const tabBarHeight = baseContent + extraBottom + 20; // 20 = paddingTop p/ ar
+  // Quanto de respiro abaixo dos labels. Em iPhone PWA usamos ao menos 28.
+  const padBottom =
+    Platform.OS === 'ios' ? Math.max(safeBottom, 22) : Math.max(safeBottom, 10);
+
+  // Altura total: ícone (28) + label (~16) + padding cima (12) + padBottom + folga
+  const tabBarHeight = 64 + padBottom;
 
   const makeIcon = (Cmp: ComponentType<IconProps>) => {
     const TabIcon = ({ color, size, focused }: { color: string; size: number; focused: boolean }) => (
@@ -52,15 +52,15 @@ export default function TabsLayout() {
           borderTopColor: 'rgba(246,239,225,0.08)',
           borderTopWidth: 1,
           height: tabBarHeight,
-          paddingTop: 10,
-          paddingBottom: extraBottom,
+          paddingTop: 12,
+          paddingBottom: padBottom,
         },
         tabBarItemStyle: {
           paddingVertical: 2,
         },
         tabBarIconStyle: {
           marginTop: 0,
-          marginBottom: 2,
+          marginBottom: 4,
         },
         tabBarLabelStyle: {
           fontFamily: fonts.textoBold,

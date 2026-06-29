@@ -1,0 +1,34 @@
+{
+  "summary": "Frontend-only retest with iPhone iOS 17 user-agent simulated via add_init_script + viewport 390x844. PRIMARY BUG (tab bar clipping on iPhone) is VERIFIED FIXED and the visual redesign of StoryCard is VERIFIED. Tab bar parent (the element that receives tabBarStyle) computed height = 92px and paddingBottom = 28px — meets requirements (>=86px height, >=22px bottom respiro for home indicator). All 4 tab icons (MoonMark=Início, Heart=Valores, Planet=Universos, Star=Favoritos) measured non-clipped (clipped_top:false, clipped_bottom:false on every cell); labels render at y=804-809 inside the 92px tab bar. StoryCard redesign verified on /, /valor/Alegria, /universo/Animais: every card has 2px noite-ameixa border, top colored panel with section accent (gold #C99A3A for Bíblicas, blue #4E84A6 for Animais, etc.), 2px gold divider (#E9B24C), and a CREME bottom panel #F6EFE1 (rgb 246,239,225) ~150px tall on the 296px lg card — i.e. about half of the card is cream, fixing the user's 'too dark' complaint. 'Era uma vez' renders in Cormorant_600SemiBold_Italic gold; titles render in Cormorant 600 on cream (high contrast). Navigation flows confirmed: tab switching across all 4 tabs changes URL, Sobre button opens /sobre, story-card tap opens /historia/EUV-0001, valor-row-Alegria opens /valor/Alegria, universo-open-Animais opens /universo/Animais. /colecao loads with empty state (no seeded items — expected). Carry-over non-blocking console warnings from iteration_1 still present (shadow* and props.pointerEvents deprecation) but do not affect functionality.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": [
+      {"component": "Style props (shadow*)", "issue": "Console warning persists: '\"shadow*\" style props are deprecated. Use \"boxShadow\".' Likely in shared shadows.card or StoryCard shadow. Reference: /app/frontend/src/theme/tokens.ts (shadows.card) used by /app/frontend/src/components/StoryCard.tsx:122."},
+      {"component": "Props.pointerEvents", "issue": "Console warning persists: 'props.pointerEvents is deprecated. Use style.pointerEvents'. Reference: /app/frontend/src/components/StoryCard.tsx:63,72 — <View pointerEvents=\"none\"> should be migrated to style.pointerEvents."}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "PRIMARY BUG FIXED: no further action needed for iPhone tab-bar clipping (height 92px, paddingBottom 28px, no icon clip).",
+    "Optional cleanup: migrate <View pointerEvents=\"none\"> → style={{ pointerEvents: 'none' }} in StoryCard.tsx (heroIconWrap, moonCorner).",
+    "Optional cleanup: replace shadow* (shadowColor/shadowOffset/shadowOpacity/shadowRadius) with boxShadow in /app/frontend/src/theme/tokens.ts shadows.card to silence RN-web deprecation.",
+    "Carry-over from iteration_1 (still applies): duplicate React keys for EUV-0001 / EUV-0012 in Home carousels — verify in /app/frontend/app/(tabs)/index.tsx (Em destaque / Para dormir tranquilo)."
+  ],
+  "critical_code_review_comments": [
+    "/app/frontend/src/hooks/use-safe-bottom.ts: ssr-safe (guards typeof document) and correctly uses Math.max(webInset, 28) when navigator.userAgent matches iPad|iPhone|iPod. Verified at runtime: with iPhone UA the parent tab bar paddingBottom = 28px.",
+    "/app/frontend/app/(tabs)/_layout.tsx: tabBarHeight = 64 + padBottom; with padBottom = max(28,10) = 28 on web (Platform.OS==='web' branch), final height = 92px — matches DOM measurement. IconSlot flex centering keeps all 4 icons clear of cell edges.",
+    "/app/frontend/src/components/StoryCard.tsx: clean separation of top art panel (accent color + UniverseIcon hero + StarrySky + MoonMark corner) and bottom cream panel; high contrast between dark title and #F6EFE1 background. The ValorBadge uses variant='on-light' so star + label remain readable.",
+    "StoryCard premium badge is absolutely positioned at top:-16 inside an `overflow:hidden` card (styles.card has overflow:hidden). On the universo screenshot the badge sits across the gold divider as intended and is visible — but the top ~4px sit just under the card top border so on smaller card sizes (sm) the placement may visually collide with the top art. Consider moving the badge inside the top panel for sm cards.",
+    "Console deprecation warnings remain — non-blocking but should be addressed before any production lint gate."
+  ],
+  "updated_files": [],
+  "success_rate": { "backend": "N/A (frontend-only)", "frontend": "100% for the targeted iPhone safe-area + StoryCard redesign verification" },
+  "seed_data_creation": "None.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "To simulate iPhone PWA: page.add_init_script overriding navigator.userAgent to an iPhone string + set_viewport_size 390x844 before goto. Note that env(safe-area-inset-bottom) reports 0 in headless Chromium, so the hook's UA-based fallback (28px) is what actually drives padding — confirmed via parent_style.paddingBottom = 28px. To inspect tab bar height you must read the PARENT of [role=tablist], not the tablist itself (parent owns the tabBarStyle including padding; tablist is the inner content row). Cards: cream panel detected as rgb(246,239,225) — use that to confirm redesign on any new screen.",
+  "rca_of_issue": "Original RCA (now resolved): on iPhone PWA, env(safe-area-inset-bottom) was either not honored or returned 0 inside the RN-web bottom tab bar, so the tab bar collapsed to ~53px and the home indicator overlapped the icons. Fix: use-safe-bottom.ts probes env(safe-area-inset-bottom) via a hidden DOM probe AND, as a robust fallback, returns 28px whenever navigator.userAgent matches iPad|iPhone|iPod. (tabs)/_layout.tsx then computes height = 64 + max(insets,22 on ios | 10 on others). Verified: parent tab bar height 92px, paddingBottom 28px, icons not clipped on all 4 cells."
+}
