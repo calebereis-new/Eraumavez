@@ -35,6 +35,7 @@ import { MoonMark } from '@/src/components/brand/MoonMark';
 import { StarrySky } from '@/src/components/brand/StarrySky';
 import { UniverseIcon } from '@/src/components/brand/UniverseIcon';
 import { ValorBadge } from '@/src/components/brand/ValorBadge';
+import { AudioPlayer } from '@/src/components/AudioPlayer';
 
 type Formato = 'adulto' | 'crianca' | 'audio' | 'video';
 
@@ -161,6 +162,11 @@ export default function HistoriaScreen() {
             </View>
           </LinearGradient>
         </View>
+
+        {/* PLAYER DE NARRAÇÃO — aparece apenas se a história tem link_audio */}
+        {hasAudio && historia.link_audio ? (
+          <AudioPlayer url={historia.link_audio} night={night} />
+        ) : null}
 
         {/* SELETOR DE FORMATO */}
         <View style={styles.tabs}>

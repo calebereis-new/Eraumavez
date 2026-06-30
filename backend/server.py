@@ -1,4 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi.responses import FileResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 import os
@@ -84,6 +85,25 @@ async def get_meta() -> Dict[str, Any]:
         "valores": valores,
         "faixas_etarias": faixas,
     }
+
+
+AUDIO_DIR = ROOT_DIR / "audio"
+
+
+@api_router.get("/audio/{story_id}.mp3")
+async def get_audio(story_id: str):
+    """Serve um arquivo MP3 cujo nome bate com o id da história."""
+    # Sanitização básica do id (sem barras / .. )
+    if "/" in story_id or ".." in story_id or "\\" in story_id:
+        raise HTTPException(status_code=400, detail="ID inválido")
+    fpath = AUDIO_DIR / f"{story_id}.mp3"
+    if not fpath.is_file():
+        raise HTTPException(status_code=404, detail="Áudio não encontrado")
+    return FileResponse(
+        path=str(fpath),
+        media_type="audio/mpeg",
+        headers={"Accept-Ranges": "bytes", "Cache-Control": "public, max-age=86400"},
+    )
 
 
 # Include the router in the main app
