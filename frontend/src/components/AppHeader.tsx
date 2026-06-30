@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
-    backgroundColor: colors.noiteAmeixa,
+    backgroundColor: 'transparent',
   },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   iconBtn: {

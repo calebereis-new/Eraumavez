@@ -1,33 +1,42 @@
 // Era Uma Vez — design tokens
-// Fonte de verdade: cores.css e tipografia.css fornecidos pela marca.
+// Fonte de verdade: identidade visual refinada (2026).
 // Use SEMPRE essas variáveis, nunca hex soltos.
 
 export const colors = {
-  // Principais
-  noiteAmeixa: '#2A1844', // base de quase tudo (~60%)
+  // Principais — fundo base muito escuro azulado violeta
+  noiteAmeixa: '#0B0717', // base fundo (~60%) — passou a ser o noite-profundo
   douradoEstrela: '#E9B24C', // acento precioso (logo, estrelas, chamadas) (~10%)
 
-  // Secundárias
-  violetaCrepusculo: '#3D2363',
-  lilasSonho: '#C8B2E6',
+  // Secundárias do gradiente noturno
+  violetaCrepusculo: '#3D2363', // topo do gradiente de tela
+  noiteMeio: '#1B1030', // meio do gradiente
+  noiteFundo: '#160E2A', // bg de barras (nav inferior, modais)
+  violetaProfundo: '#241541', // tinta escura/textos sobre claro
+
+  // Lavandas
+  lavanda: '#9A86C0', // texto secundário
+  lilasSonho: '#C8B2E6', // texto subtítulo
+  ameixaPro: '#7C68A8', // texto inativo
+
   coralEntardecer: '#E98B6B',
   azulAnoitecer: '#4E84A6',
   cremeLencol: '#F6EFE1', // textos/cards sobre escuro (~30%)
+  cremeForte: '#FBF5E8', // títulos cremes mais brancos
 
   // Apoio
   tinta: '#241541', // texto sobre claro
   cremeFundo: '#EFE4CE',
 
-  // Modo Noite (mais profundo que ameixa)
-  noiteProfunda: '#170A28',
+  // Modo Noite (ainda mais profundo)
+  noiteProfunda: '#070410',
 
   // Seções
   secBiblicas: '#C99A3A',
   secHerois: '#4E84A6',
   secPrincesas: '#D87B9C',
   secAnimais: '#6E8E63',
-  secContos: '#5B3A8C',
-  secOutros: '#7A5BB0',
+  secContos: '#7A5DAE',
+  secOutros: '#9A86C0',
 } as const;
 
 export const universoCor = (universo: string): string => {
@@ -61,20 +70,22 @@ export const spacing = {
 } as const;
 
 export const radius = {
-  sm: 6,
-  md: 10,
-  lg: 16,
-  xl: 24,
+  sm: 8,
+  md: 14,
+  lg: 18,
+  xl: 22,
+  xxl: 28,
   pill: 999,
 } as const;
 
 export const shadows = {
   card: {
-    // Versão moderna (web + RN >=0.76)
-    boxShadow: '0 6px 14px rgba(0, 0, 0, 0.35)',
-    // Fallback Android
+    boxShadow: '0 8px 22px rgba(0, 0, 0, 0.42)',
     elevation: 6,
   },
 };
+
+// Gradiente padrão de fundo das telas — topo violeta → fundo escuro.
+export const gradientNoiteTela = [colors.violetaCrepusculo, colors.noiteMeio, colors.noiteAmeixa] as const;
 
 export type FontKey = keyof typeof fonts;
