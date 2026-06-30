@@ -11,6 +11,17 @@ config.cacheStores = [
   new FileStore({ root: path.join(root, 'cache') }),
 ];
 
+// Reduce file watchers: ignora dirs nativos pesados em node_modules (causa ENOSPC em containers).
+config.resolver = config.resolver || {};
+config.resolver.blockList = [
+  /\/node_modules\/.+\/(android|ios|windows|macos)\/.*/,
+  /\/node_modules\/react-native\/ReactAndroid\/.*/,
+  /\/node_modules\/react-native\/ReactCommon\/.*/,
+  /\/node_modules\/react-native\/sdks\/.*/,
+  /\/node_modules\/react-native\/Libraries\/.*\.(h|m|mm|cpp)$/,
+  /\/\.git\/.*/,
+];
+config.watchFolders = [__dirname];
 
 // // Exclude unnecessary directories from file watching
 // config.watchFolders = [__dirname];
