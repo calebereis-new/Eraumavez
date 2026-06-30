@@ -13,7 +13,7 @@ type Props = {
   testID?: string;
 };
 
-const BASE = process.env.EXPO_PUBLIC_BACKEND_URL ?? '';
+const BASE = process.env.EXPO_PUBLIC_BACKEND_URL;
 
 function fmt(t: number): string {
   if (!isFinite(t) || t < 0) return '0:00';
