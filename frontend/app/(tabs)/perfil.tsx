@@ -70,7 +70,7 @@ export default function Perfil() {
   const trocar = async () => {
     // Navega direto para a seleção — mais rápido e funciona no web.
     await setActiveProfileId(null);
-    router.replace('/auth/perfis');
+    router.replace('/auth/perfis' as any);
   };
 
   if (!active) {
@@ -78,7 +78,7 @@ export default function Perfil() {
       <ScreenBg seed="perfil-empty">
         <View style={styles.emptyAll}>
           <Text style={styles.emptyTitle}>Nenhum perfil ativo</Text>
-          <Pressable style={styles.cta} onPress={() => router.push('/auth/perfis')} testID="perfil-go-select">
+          <Pressable style={styles.cta} onPress={() => router.push('/auth/perfis' as any)} testID="perfil-go-select">
             <Text style={styles.ctaTxt}>Escolher perfil</Text>
           </Pressable>
         </View>

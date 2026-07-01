@@ -1,5 +1,5 @@
-// Tela de Entrar / Criar conta — apenas visual. Qualquer clique entra.
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+// Tela de Entrar / Criar conta com integração real ao backend.
+import { Alert, ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Envelope, Eye, Lock } from 'phosphor-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { ScreenBg } from '@/src/components/ScreenBg';
 import { MoonMark } from '@/src/components/brand/MoonMark';
 import { setAuthed } from '@/src/store/profiles';
+import { api } from '@/src/api/catalog';
 import { colors, fonts, radius, spacing } from '@/src/theme/tokens';
 
 type Mode = 'login' | 'signup';
@@ -16,12 +17,52 @@ export default function Entrar() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [mode, setMode] = useState<Mode>('login');
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
+  const handleSubmit = async () => {
+    if (!email.trim() || !senha) {
+      Alert.alert('Campos obrigatórios', 'Por favor, preencha o e-mail e a senha.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      if (mode === 'login') {
+        await api.login(email.trim(), senha);
+        await setAuthed(true);
+        router.replace('/auth/perfis' as any);
+      } else {
+        await api.signup(email.trim(), senha);
+        Alert.alert('Conta criada', 'Sua conta foi criada com sucesso! Entrando...', [
+          {
+            text: 'OK',
+            onPress: async () => {
+              try {
+                setLoading(true);
+                await api.login(email.trim(), senha);
+                await setAuthed(true);
+                router.replace('/auth/perfis' as any);
+              } catch (e: any) {
+                Alert.alert('Erro ao entrar', e?.message ?? 'Tente novamente');
+              } finally {
+                setLoading(false);
+              }
+            },
+          },
+        ]);
+      }
+    } catch (e: any) {
+      Alert.alert('Erro', e?.message ?? 'Ocorreu um erro, tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fakeEnter = async () => {
     await setAuthed(true);
-    router.replace('/auth/perfis');
+    router.replace('/auth/perfis' as any);
   };
 
   return (
@@ -91,8 +132,17 @@ export default function Entrar() {
           <Text style={styles.forgot} testID="auth-forgot">Esqueci a senha</Text>
         )}
 
-        <Pressable style={styles.cta} onPress={fakeEnter} testID="auth-submit">
-          <Text style={styles.ctaTxt}>{mode === 'login' ? 'Entrar' : 'Criar conta'}</Text>
+        <Pressable
+          style={[styles.cta, loading && { opacity: 0.8 }]}
+          onPress={loading ? undefined : handleSubmit}
+          testID="auth-submit"
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color={colors.violetaProfundo} />
+          ) : (
+            <Text style={styles.ctaTxt}>{mode === 'login' ? 'Entrar' : 'Criar conta'}</Text>
+          )}
         </Pressable>
 
         <View style={styles.divider}>

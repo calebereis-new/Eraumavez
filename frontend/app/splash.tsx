@@ -23,12 +23,12 @@ export default function Splash() {
     const t = setTimeout(async () => {
       const authed = await getAuthed();
       if (!authed) {
-        router.replace('/auth/entrar');
+        router.replace('/auth/entrar' as any);
         return;
       }
       const active = await getActiveProfileId();
       if (!active) {
-        router.replace('/auth/perfis');
+        router.replace('/auth/perfis' as any);
         return;
       }
       router.replace('/(tabs)');

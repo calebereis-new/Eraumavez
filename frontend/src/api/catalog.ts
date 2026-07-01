@@ -36,10 +36,33 @@ async function jget<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
+async function jpost<T>(path: string, body: any): Promise<T> {
+  const res = await fetch(`${BASE}/api${path}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    let msg = `Erro na requisição (${res.status})`;
+    try {
+      const err = await res.json();
+      if (err?.detail) msg = err.detail;
+    } catch {}
+    throw new Error(msg);
+  }
+  return (await res.json()) as T;
+}
+
 export const api = {
   listStories: () => jget<Historia[]>('/stories'),
   getStory: (id: string) => jget<Historia>(`/stories/${id}`),
   getMeta: () => jget<Meta>('/meta'),
+  login: (email: string, senha: string) =>
+    jpost<{ token: string; email: string }>('/auth/login', { email, senha }),
+  signup: (email: string, senha: string) =>
+    jpost<{ message: string; email: string }>('/auth/signup', { email, senha }),
 };
 
 // Helpers de derivação no cliente -----------------------------------------

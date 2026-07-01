@@ -5,8 +5,11 @@ from starlette.middleware.cors import CORSMiddleware
 import os
 import json
 import logging
+import time
+import bcrypt
 from pathlib import Path
 from typing import Any, Dict, List
+from pydantic import BaseModel
 
 
 ROOT_DIR = Path(__file__).parent
@@ -104,6 +107,92 @@ async def get_audio(story_id: str):
         media_type="audio/mpeg",
         headers={"Accept-Ranges": "bytes", "Cache-Control": "public, max-age=86400"},
     )
+
+
+class UserAuth(BaseModel):
+    email: str
+    senha: str
+
+
+USERS_PATH = ROOT_DIR / "usuarios.json"
+
+
+def load_users() -> Dict[str, Any]:
+    if not USERS_PATH.exists():
+        with open(USERS_PATH, "w", encoding="utf-8") as f:
+            json.dump({"usuarios": []}, f)
+        return {"usuarios": []}
+    try:
+        with open(USERS_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {"usuarios": []}
+
+
+def save_users(users_data: Dict[str, Any]):
+    with open(USERS_PATH, "w", encoding="utf-8") as f:
+        json.dump(users_data, f, ensure_ascii=False, indent=2)
+
+
+def hash_password(password: str) -> str:
+    pwd_bytes = password.encode('utf-8')
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(pwd_bytes, salt)
+    return hashed.decode('utf-8')
+
+
+def verify_password(password: str, hashed_password: str) -> bool:
+    pwd_bytes = password.encode('utf-8')
+    hashed_bytes = hashed_password.encode('utf-8')
+    return bcrypt.checkpw(pwd_bytes, hashed_bytes)
+
+
+@api_router.post("/auth/signup")
+async def signup(credentials: UserAuth):
+    email = credentials.email.strip().lower()
+    senha = credentials.senha
+    if not email or not senha:
+        raise HTTPException(status_code=400, detail="E-mail e senha são obrigatórios")
+    
+    users_data = load_users()
+    usuarios = users_data.get("usuarios", [])
+    
+    # Verifica se já existe
+    for u in usuarios:
+        if u.get("email") == email:
+            raise HTTPException(status_code=400, detail="Este e-mail já está cadastrado")
+            
+    # Cria novo usuário
+    hashed = hash_password(senha)
+    new_user = {
+        "email": email,
+        "senha_hash": hashed,
+        "id": f"u_{int(time.time())}"
+    }
+    usuarios.append(new_user)
+    users_data["usuarios"] = usuarios
+    save_users(users_data)
+    return {"message": "Conta criada com sucesso", "email": email}
+
+
+@api_router.post("/auth/login")
+async def login(credentials: UserAuth):
+    email = credentials.email.strip().lower()
+    senha = credentials.senha
+    if not email or not senha:
+        raise HTTPException(status_code=400, detail="E-mail e senha são obrigatórios")
+        
+    users_data = load_users()
+    usuarios = users_data.get("usuarios", [])
+    
+    for u in usuarios:
+        if u.get("email") == email:
+            if verify_password(senha, u.get("senha_hash", "")):
+                return {"token": f"token_{u.get('id')}", "email": email}
+            else:
+                raise HTTPException(status_code=400, detail="Senha incorreta")
+                
+    raise HTTPException(status_code=400, detail="Usuário não encontrado")
 
 
 # Include the router in the main app

@@ -377,7 +377,10 @@ function BadgeMoon({ text }: { text: string }) {
 
 // Helper para passar o UniverseIcon como tipo de Icon em <Badge />
 function UniverseIconAsCmp(universo: string): ComponentType<IconProps> {
-  const Cmp = (props: IconProps) => <UniverseIcon universo={universo} {...props} color={props.color as string} />;
+  const Cmp = (props: IconProps) => {
+    const sz = typeof props.size === 'number' ? props.size : undefined;
+    return <UniverseIcon universo={universo} color={props.color as string} size={sz} weight={props.weight as any} />;
+  };
   Cmp.displayName = 'UniverseIconAsCmp';
   return Cmp;
 }
