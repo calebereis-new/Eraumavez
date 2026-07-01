@@ -114,7 +114,10 @@ class UserAuth(BaseModel):
     senha: str
 
 
-USERS_PATH = ROOT_DIR / "usuarios.json"
+if os.environ.get("VERCEL") or os.environ.get("LAMBDA_TASK_ROOT"):
+    USERS_PATH = Path("/tmp") / "usuarios.json"
+else:
+    USERS_PATH = ROOT_DIR / "usuarios.json"
 
 
 def load_users() -> Dict[str, Any]:
