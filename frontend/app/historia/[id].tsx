@@ -38,6 +38,7 @@ import { StarrySky } from '@/src/components/brand/StarrySky';
 import { UniverseIcon } from '@/src/components/brand/UniverseIcon';
 import { ValorBadge } from '@/src/components/brand/ValorBadge';
 import { AudioPlayer } from '@/src/components/AudioPlayer';
+import { KidReader } from '@/src/components/KidReader';
 
 type Formato = 'adulto' | 'crianca' | 'audio' | 'video';
 
@@ -239,9 +240,11 @@ export default function HistoriaScreen() {
           )}
 
           {formato === 'crianca' && hasCrianca && (
-            <Text style={[styles.bodyText, styles.kidText]} testID="texto-crianca">
-              {historia.texto_simplificado}
-            </Text>
+            <KidReader
+              textoSimplificado={historia.texto_simplificado ?? ''}
+              storyId={historia.id}
+              night={night}
+            />
           )}
 
           {formato === 'audio' && (
