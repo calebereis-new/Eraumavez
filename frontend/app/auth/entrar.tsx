@@ -1,7 +1,7 @@
 // Tela de Entrar / Criar conta com integração real ao backend.
 import { Alert, ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Envelope, Eye, Lock } from 'phosphor-react-native';
+import { Envelope, Eye, EyeSlash, Lock } from 'phosphor-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
 
@@ -20,6 +20,7 @@ export default function Entrar() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [showSenha, setShowSenha] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleSubmit = async () => {
@@ -110,14 +111,22 @@ export default function Entrar() {
             placeholder="••••••••"
             placeholderTextColor="rgba(216,204,236,0.5)"
             style={styles.input}
-            secureTextEntry
+            secureTextEntry={!showSenha}
             testID="auth-senha"
           />
-          <Eye size={17} color={colors.lavanda} weight="light" />
+          <Pressable onPress={() => setShowSenha(!showSenha)} hitSlop={10} style={{ padding: 4 }}>
+            {showSenha ? (
+              <EyeSlash size={17} color={colors.lavanda} weight="light" />
+            ) : (
+              <Eye size={17} color={colors.lavanda} weight="light" />
+            )}
+          </Pressable>
         </View>
 
         {mode === 'login' && (
-          <Text style={styles.forgot} testID="auth-forgot">Esqueci a senha</Text>
+          <Pressable onPress={() => router.push('/auth/recuperar' as any)}>
+            <Text style={styles.forgot} testID="auth-forgot">Esqueci a senha</Text>
+          </Pressable>
         )}
 
         {errorMsg && (
@@ -138,21 +147,6 @@ export default function Entrar() {
             <Text style={styles.ctaTxt}>{mode === 'login' ? 'Entrar' : 'Criar conta'}</Text>
           )}
         </Pressable>
-
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerTxt}>ou</Text>
-          <View style={styles.dividerLine} />
-        </View>
-
-        <View style={styles.socialRow}>
-          <Pressable style={styles.socialBtn} onPress={fakeEnter} testID="auth-google">
-            <Text style={styles.socialTxt}>Google</Text>
-          </Pressable>
-          <Pressable style={styles.socialBtn} onPress={fakeEnter} testID="auth-apple">
-            <Text style={styles.socialTxt}>Apple</Text>
-          </Pressable>
-        </View>
 
         <Text style={styles.terms}>
           Ao continuar, você concorda com os Termos e a Política de Privacidade.

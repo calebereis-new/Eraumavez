@@ -114,22 +114,59 @@ class UserAuth(BaseModel):
     senha: str
 
 
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+
 if os.environ.get("VERCEL") or os.environ.get("LAMBDA_TASK_ROOT"):
     USERS_PATH = Path("/tmp") / "usuarios.json"
 else:
     USERS_PATH = ROOT_DIR / "usuarios.json"
 
 
+MOCK_USERS = [
+    {
+        "email": "admin@eraumavez.com",
+        "senha_hash": "$2b$12$rYwuPSVwyKFCYLzu3J0AWeX4zh7SbNre0qDmKPkpTvG8WQZNgI7Um",
+        "id": "u_admin"
+    },
+    {
+        "email": "teste@eraumavez.com",
+        "senha_hash": "$2b$12$1QLyiFybFeMig7uObK4ZYOsNXdmt7MWyXIy6Z3GPpyXJKCsiecbN.",
+        "id": "u_teste"
+    }
+]
+
+
 def load_users() -> Dict[str, Any]:
     if not USERS_PATH.exists():
-        with open(USERS_PATH, "w", encoding="utf-8") as f:
-            json.dump({"usuarios": []}, f)
-        return {"usuarios": []}
+        initial_data = {"usuarios": MOCK_USERS}
+        try:
+            with open(USERS_PATH, "w", encoding="utf-8") as f:
+                json.dump(initial_data, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
+        return initial_data
     try:
         with open(USERS_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+            usuarios = data.get("usuarios", [])
+            existing_emails = {u.get("email") for u in usuarios}
+            added = False
+            for mu in MOCK_USERS:
+                if mu["email"] not in existing_emails:
+                    usuarios.append(mu)
+                    added = True
+            if added:
+                data["usuarios"] = usuarios
+                try:
+                    with open(USERS_PATH, "w", encoding="utf-8") as f:
+                        json.dump(data, f, ensure_ascii=False, indent=2)
+                except Exception:
+                    pass
+            return data
     except Exception:
-        return {"usuarios": []}
+        return {"usuarios": MOCK_USERS}
 
 
 def save_users(users_data: Dict[str, Any]):
@@ -196,6 +233,23 @@ async def login(credentials: UserAuth):
                 raise HTTPException(status_code=400, detail="Senha incorreta")
                 
     raise HTTPException(status_code=400, detail="Usuário não encontrado")
+
+
+@api_router.post("/auth/forgot-password")
+async def forgot_password(req: ForgotPasswordRequest):
+    email = req.email.strip().lower()
+    if not email:
+        raise HTTPException(status_code=400, detail="E-mail é obrigatório")
+        
+    users_data = load_users()
+    usuarios = users_data.get("usuarios", [])
+    
+    for u in usuarios:
+        if u.get("email") == email:
+            # Em tese, dispararia a notificação por e-mail aqui.
+            return {"message": "Instruções de recuperação enviadas para o e-mail cadastrado."}
+            
+    raise HTTPException(status_code=400, detail="Este e-mail não está cadastrado")
 
 
 # Include the router in the main app

@@ -63,6 +63,8 @@ export const api = {
     jpost<{ token: string; email: string }>('/auth/login', { email, senha }),
   signup: (email: string, senha: string) =>
     jpost<{ message: string; email: string }>('/auth/signup', { email, senha }),
+  forgotPassword: (email: string) =>
+    jpost<{ message: string }>('/auth/forgot-password', { email }),
 };
 
 // Helpers de derivação no cliente -----------------------------------------
