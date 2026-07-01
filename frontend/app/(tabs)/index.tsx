@@ -9,6 +9,7 @@ import { AppHeader } from '@/src/components/AppHeader';
 import { Shelf } from '@/src/components/Shelf';
 import { ScreenBg } from '@/src/components/ScreenBg';
 import { useCatalog } from '@/src/hooks/use-catalog';
+import { useProfiles } from '@/src/store/profiles';
 import {
   curtas,
   destaques,
@@ -29,6 +30,8 @@ export default function Home() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { stories, loading, error } = useCatalog();
+  const { active } = useProfiles();
+  const nomeCurto = active?.nome?.split(' ')[0] ?? '';
 
   const destaque = useMemo(() => destaques(stories), [stories]);
   const paraDormir = useMemo(() => {
@@ -51,9 +54,9 @@ export default function Home() {
 
   return (
     <ScreenBg seed="home-bg">
-      <View style={{ paddingTop: insets.top }} testID="home-screen">
+      <View style={{ flex: 1, paddingTop: insets.top }} testID="home-screen">
       <AppHeader
-        greeting={`${saudacao()}!`}
+        greeting={nomeCurto ? `${saudacao()}, ${nomeCurto}!` : `${saudacao()}!`}
         subtitle="Qual história hoje?"
         testID="home-header"
         rightSlot={

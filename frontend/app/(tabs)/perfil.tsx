@@ -1,6 +1,6 @@
 // Aba PERFIL — perfil ativo com avatar, stats, histórico de leituras
 // (gostei/não gostei) e sub-aba Favoritos. Permite trocar de perfil.
-import { Alert, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowsLeftRight, Star, ThumbsDown, ThumbsUp } from 'phosphor-react-native';
@@ -67,23 +67,10 @@ export default function Perfil() {
     [favIds, stories],
   );
 
-  const trocar = () => {
-    Alert.alert(
-      'Trocar de perfil',
-      profiles.length > 1
-        ? 'Quem vai sonhar agora?'
-        : 'Quer voltar para a tela de seleção de perfis?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Trocar',
-          onPress: async () => {
-            await setActiveProfileId(null);
-            router.replace('/auth/perfis');
-          },
-        },
-      ],
-    );
+  const trocar = async () => {
+    // Navega direto para a seleção — mais rápido e funciona no web.
+    await setActiveProfileId(null);
+    router.replace('/auth/perfis');
   };
 
   if (!active) {
