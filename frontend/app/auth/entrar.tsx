@@ -35,23 +35,9 @@ export default function Entrar() {
         router.replace('/auth/perfis' as any);
       } else {
         await api.signup(email.trim(), senha);
-        Alert.alert('Conta criada', 'Sua conta foi criada com sucesso! Entrando...', [
-          {
-            text: 'OK',
-            onPress: async () => {
-              try {
-                setLoading(true);
-                await api.login(email.trim(), senha);
-                await setAuthed(true);
-                router.replace('/auth/perfis' as any);
-              } catch (e: any) {
-                Alert.alert('Erro ao entrar', e?.message ?? 'Tente novamente');
-              } finally {
-                setLoading(false);
-              }
-            },
-          },
-        ]);
+        await api.login(email.trim(), senha);
+        await setAuthed(true);
+        router.replace('/auth/perfis' as any);
       }
     } catch (e: any) {
       Alert.alert('Erro', e?.message ?? 'Ocorreu um erro, tente novamente.');

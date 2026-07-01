@@ -3,7 +3,7 @@
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowsLeftRight, Star, ThumbsDown, ThumbsUp } from 'phosphor-react-native';
+import { ArrowsLeftRight, SignOut, Star, ThumbsDown, ThumbsUp } from 'phosphor-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -16,6 +16,7 @@ import {
   getActiveProfileId,
   listProfiles,
   setActiveProfileId,
+  clearAuth,
 } from '@/src/store/profiles';
 import { computeStats, HistoryEntry, listHistory } from '@/src/store/history';
 import { colors, fonts, radius, spacing, universoCor } from '@/src/theme/tokens';
@@ -73,6 +74,11 @@ export default function Perfil() {
     router.replace('/auth/perfis' as any);
   };
 
+  const logout = async () => {
+    await clearAuth();
+    router.replace('/auth/entrar' as any);
+  };
+
   if (!active) {
     return (
       <ScreenBg seed="perfil-empty">
@@ -80,6 +86,9 @@ export default function Perfil() {
           <Text style={styles.emptyTitle}>Nenhum perfil ativo</Text>
           <Pressable style={styles.cta} onPress={() => router.push('/auth/perfis' as any)} testID="perfil-go-select">
             <Text style={styles.ctaTxt}>Escolher perfil</Text>
+          </Pressable>
+          <Pressable style={[styles.cta, { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.lilasSonho, marginTop: 10 }]} onPress={logout} testID="perfil-empty-logout">
+            <Text style={[styles.ctaTxt, { color: colors.lilasSonho }]}>Sair da conta</Text>
           </Pressable>
         </View>
       </ScreenBg>
@@ -107,6 +116,9 @@ export default function Perfil() {
           </View>
           <Pressable onPress={trocar} hitSlop={10} style={styles.switchBtn} testID="perfil-trocar">
             <ArrowsLeftRight size={18} color={colors.lilasSonho} weight="regular" />
+          </Pressable>
+          <Pressable onPress={logout} hitSlop={10} style={styles.switchBtn} testID="perfil-logout">
+            <SignOut size={18} color={colors.lilasSonho} weight="regular" />
           </Pressable>
         </View>
 
