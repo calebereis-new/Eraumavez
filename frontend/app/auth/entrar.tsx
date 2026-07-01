@@ -32,13 +32,13 @@ export default function Entrar() {
       setLoading(true);
       setErrorMsg(null);
       if (mode === 'login') {
-        await api.login(email.trim(), senha);
-        await setAuthed(true);
+        const res = await api.login(email.trim(), senha);
+        await setAuthed(true, res.email);
         router.replace('/auth/perfis' as any);
       } else {
         await api.signup(email.trim(), senha);
-        await api.login(email.trim(), senha);
-        await setAuthed(true);
+        const res = await api.login(email.trim(), senha);
+        await setAuthed(true, res.email);
         router.replace('/auth/perfis' as any);
       }
     } catch (e: any) {
@@ -49,7 +49,7 @@ export default function Entrar() {
   };
 
   const fakeEnter = async () => {
-    await setAuthed(true);
+    await setAuthed(true, 'convidado@eraumavez.com');
     router.replace('/auth/perfis' as any);
   };
 

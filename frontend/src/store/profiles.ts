@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
 
 const KEY_AUTH = '@euv:auth:v1';
+const KEY_USER = '@euv:user:v1';
 const KEY_PROFILES = '@euv:profiles:v1';
 const KEY_ACTIVE = '@euv:active-profile:v1';
 
@@ -28,24 +29,50 @@ function uid(): string {
   return `p_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
 }
 
+// Helpers de derivação de chaves escopadas por usuário
+async function getProfilesKey(): Promise<string> {
+  const email = await AsyncStorage.getItem(KEY_USER);
+  if (email) {
+    const sanitized = email.replace(/[^a-zA-Z0-9]/g, '_');
+    return `@euv:profiles:${sanitized}:v1`;
+  }
+  return KEY_PROFILES;
+}
+
+async function getActiveKey(): Promise<string> {
+  const email = await AsyncStorage.getItem(KEY_USER);
+  if (email) {
+    const sanitized = email.replace(/[^a-zA-Z0-9]/g, '_');
+    return `@euv:active-profile:${sanitized}:v1`;
+  }
+  return KEY_ACTIVE;
+}
+
 // ─────────────── AUTH (simulado) ───────────────
 export async function getAuthed(): Promise<boolean> {
   const v = await AsyncStorage.getItem(KEY_AUTH);
   return v === '1';
 }
 
-export async function setAuthed(v: boolean): Promise<void> {
+export async function setAuthed(v: boolean, userEmail?: string): Promise<void> {
   await AsyncStorage.setItem(KEY_AUTH, v ? '1' : '0');
+  if (v && userEmail) {
+    await AsyncStorage.setItem(KEY_USER, userEmail);
+  } else if (!v) {
+    await AsyncStorage.removeItem(KEY_USER);
+  }
 }
 
 export async function clearAuth(): Promise<void> {
-  await AsyncStorage.multiRemove([KEY_AUTH, KEY_ACTIVE]);
+  const actKey = await getActiveKey();
+  await AsyncStorage.multiRemove([KEY_AUTH, KEY_USER, actKey]);
 }
 
 // ─────────────── PROFILES ───────────────
 async function readProfiles(): Promise<Profile[]> {
   try {
-    const raw = await AsyncStorage.getItem(KEY_PROFILES);
+    const key = await getProfilesKey();
+    const raw = await AsyncStorage.getItem(key);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -56,7 +83,8 @@ async function readProfiles(): Promise<Profile[]> {
 }
 
 async function writeProfiles(list: Profile[]): Promise<void> {
-  await AsyncStorage.setItem(KEY_PROFILES, JSON.stringify(list));
+  const key = await getProfilesKey();
+  await AsyncStorage.setItem(key, JSON.stringify(list));
 }
 
 export async function listProfiles(): Promise<Profile[]> {
@@ -86,18 +114,21 @@ export async function updateProfile(id: string, patch: Partial<Pick<Profile, 'no
 export async function deleteProfile(id: string): Promise<void> {
   const list = await readProfiles();
   await writeProfiles(list.filter((p) => p.id !== id));
-  const active = await AsyncStorage.getItem(KEY_ACTIVE);
-  if (active === id) await AsyncStorage.removeItem(KEY_ACTIVE);
+  const key = await getActiveKey();
+  const active = await AsyncStorage.getItem(key);
+  if (active === id) await AsyncStorage.removeItem(key);
 }
 
 // ─────────────── ACTIVE PROFILE ───────────────
 export async function getActiveProfileId(): Promise<string | null> {
-  return AsyncStorage.getItem(KEY_ACTIVE);
+  const key = await getActiveKey();
+  return AsyncStorage.getItem(key);
 }
 
 export async function setActiveProfileId(id: string | null): Promise<void> {
-  if (id == null) await AsyncStorage.removeItem(KEY_ACTIVE);
-  else await AsyncStorage.setItem(KEY_ACTIVE, id);
+  const key = await getActiveKey();
+  if (id == null) await AsyncStorage.removeItem(key);
+  else await AsyncStorage.setItem(key, id);
 }
 
 // ─────────────── React hook ───────────────
@@ -107,7 +138,8 @@ export function useProfiles() {
   const [ready, setReady] = useState(false);
 
   const refresh = useCallback(async () => {
-    const [list, act] = await Promise.all([readProfiles(), AsyncStorage.getItem(KEY_ACTIVE)]);
+    const aKey = await getActiveKey();
+    const [list, act] = await Promise.all([readProfiles(), AsyncStorage.getItem(aKey)]);
     setProfiles(list);
     setActive(act);
     setReady(true);
