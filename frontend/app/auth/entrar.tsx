@@ -20,15 +20,17 @@ export default function Entrar() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleSubmit = async () => {
     if (!email.trim() || !senha) {
-      Alert.alert('Campos obrigatórios', 'Por favor, preencha o e-mail e a senha.');
+      setErrorMsg('Por favor, preencha o e-mail e a senha.');
       return;
     }
 
     try {
       setLoading(true);
+      setErrorMsg(null);
       if (mode === 'login') {
         await api.login(email.trim(), senha);
         await setAuthed(true);
@@ -40,7 +42,7 @@ export default function Entrar() {
         router.replace('/auth/perfis' as any);
       }
     } catch (e: any) {
-      Alert.alert('Erro', e?.message ?? 'Ocorreu um erro, tente novamente.');
+      setErrorMsg(e?.message ?? 'Ocorreu um erro, tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -72,7 +74,7 @@ export default function Entrar() {
             return (
               <Pressable
                 key={m}
-                onPress={() => setMode(m)}
+                onPress={() => { setMode(m); setErrorMsg(null); }}
                 style={[styles.tab, active && styles.tabActive]}
                 testID={`auth-tab-${m}`}
               >
@@ -89,7 +91,7 @@ export default function Entrar() {
           <Envelope size={16} color={colors.lavanda} weight="light" />
           <TextInput
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(txt) => { setEmail(txt); setErrorMsg(null); }}
             placeholder="seu-email@email.com"
             placeholderTextColor="rgba(216,204,236,0.5)"
             style={styles.input}
@@ -104,7 +106,7 @@ export default function Entrar() {
           <Lock size={16} color={colors.lavanda} weight="light" />
           <TextInput
             value={senha}
-            onChangeText={setSenha}
+            onChangeText={(txt) => { setSenha(txt); setErrorMsg(null); }}
             placeholder="••••••••"
             placeholderTextColor="rgba(216,204,236,0.5)"
             style={styles.input}
@@ -116,6 +118,12 @@ export default function Entrar() {
 
         {mode === 'login' && (
           <Text style={styles.forgot} testID="auth-forgot">Esqueci a senha</Text>
+        )}
+
+        {errorMsg && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText} testID="auth-error-message">{errorMsg}</Text>
+          </View>
         )}
 
         <Pressable
@@ -202,4 +210,19 @@ const styles = StyleSheet.create({
   },
   socialTxt: { fontFamily: fonts.textoBold, fontSize: 12, color: colors.cremeLencol },
   terms: { fontSize: 10, color: colors.ameixaPro, fontFamily: fonts.texto, marginTop: 18, lineHeight: 15, textAlign: 'center' },
+  errorContainer: {
+    backgroundColor: 'rgba(233,139,107,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(233,139,107,0.3)',
+    borderRadius: radius.md,
+    padding: 10,
+    marginTop: spacing.md,
+    alignItems: 'center',
+  },
+  errorText: {
+    color: colors.coralEntardecer,
+    fontFamily: fonts.textoBold,
+    fontSize: 12,
+    textAlign: 'center',
+  },
 });
