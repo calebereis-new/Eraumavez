@@ -30,6 +30,8 @@ import {
 import { api, Historia, valoresSecundariosArr } from '@/src/api/catalog';
 import { useFavorites } from '@/src/store/favorites';
 import { useNightMode } from '@/src/store/nightMode';
+import { getActiveProfileId } from '@/src/store/profiles';
+import { logRead } from '@/src/store/history';
 import { colors, fonts, radius, spacing, universoCor } from '@/src/theme/tokens';
 import { MoonMark } from '@/src/components/brand/MoonMark';
 import { StarrySky } from '@/src/components/brand/StarrySky';
@@ -60,6 +62,19 @@ export default function HistoriaScreen() {
           setLoading(true);
           const h = await api.getStory(id);
           if (alive) setHistoria(h);
+          // Registra leitura no histórico do perfil ativo (se houver)
+          if (h && alive) {
+            const profileId = await getActiveProfileId();
+            if (profileId) {
+              void logRead(profileId, {
+                storyId: h.id,
+                storyTitulo: h.titulo,
+                universo: h.universo,
+                valor: h.valor_principal,
+                duracao: h.duracao_min,
+              });
+            }
+          }
         } finally {
           if (alive) setLoading(false);
         }
@@ -266,6 +281,16 @@ export default function HistoriaScreen() {
             </View>
           ) : null}
 
+          {/* CTA: terminar história → tela de Fim */}
+          <Pressable
+            style={styles.endCta}
+            onPress={() => router.push(`/historia/fim/${historia.id}`)}
+            testID="historia-finish"
+          >
+            <Text style={styles.endCtaTxt}>Era uma vez…</Text>
+            <Text style={styles.endCtaSub}>Terminamos! Avaliar e ver a próxima</Text>
+          </Pressable>
+
           {/* Valores secundários */}
           {valoresSecundariosArr(historia).length > 0 && (
             <View style={styles.valoresWrap}>
@@ -466,6 +491,16 @@ const styles = StyleSheet.create({
   valoresWrap: { marginTop: spacing.xl },
   valoresLabel: { fontFamily: fonts.textoExtra, color: colors.cremeLencol, fontSize: 11, letterSpacing: 0.6, marginBottom: spacing.sm },
   valoresChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  endCta: {
+    marginTop: spacing.xl,
+    paddingVertical: 16,
+    borderRadius: radius.lg,
+    backgroundColor: colors.douradoEstrela,
+    alignItems: 'center',
+    boxShadow: '0 8px 20px rgba(233,178,76,0.28)' as any,
+  },
+  endCtaTxt: { fontFamily: fonts.tituloNarrativa, fontStyle: 'italic', color: colors.violetaProfundo, fontSize: 19 },
+  endCtaSub: { fontFamily: fonts.textoBold, color: colors.violetaProfundo, fontSize: 11, opacity: 0.75, marginTop: 2 },
 });
 
 const ft = StyleSheet.create({

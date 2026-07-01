@@ -1,12 +1,10 @@
 // Tela "Sobre o Era Uma Vez"
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 
 import { AppHeader } from '@/src/components/AppHeader';
 import { MoonMark } from '@/src/components/brand/MoonMark';
-import { StarrySky } from '@/src/components/brand/StarrySky';
-import { Wordmark } from '@/src/components/brand/Wordmark';
+import { ScreenBg } from '@/src/components/ScreenBg';
 import { colors, fonts, radius, spacing } from '@/src/theme/tokens';
 
 const APP_VERSION = '1.0.0';
@@ -14,107 +12,125 @@ const APP_VERSION = '1.0.0';
 export default function SobreScreen() {
   const insets = useSafeAreaInsets();
   return (
-    <View style={[styles.root, { paddingTop: insets.top }]} testID="sobre-screen">
-      <StarrySky seed="sobre-bg" density={48} opacity={0.16} />
-      <AppHeader showBack />
-      <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingBottom: 80 + insets.bottom }} showsVerticalScrollIndicator={false}>
-        <LinearGradient
-          colors={[colors.violetaCrepusculo, colors.noiteAmeixa]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.heroCard}
+    <ScreenBg seed="sobre-bg" density={40}>
+      <View style={{ paddingTop: insets.top }} testID="sobre-screen">
+        <AppHeader showBack />
+        <ScrollView
+          contentContainerStyle={{
+            padding: spacing.lg,
+            paddingBottom: 80 + insets.bottom,
+          }}
+          showsVerticalScrollIndicator={false}
         >
-          <StarrySky seed="sobre-hero" density={28} opacity={0.28} />
-          <View style={styles.brandRow}>
-            <MoonMark size={64} />
+          {/* Header compacto — só a lua dourada + título italicizado */}
+          <View style={styles.hero}>
+            <MoonMark size={44} />
+            <Text style={styles.heroTitle}>
+              Era uma <Text style={styles.heroTitleAccent}>vez</Text>
+            </Text>
           </View>
-          <View style={{ alignItems: 'center', marginTop: spacing.md }}>
-            <Wordmark width={200} />
+
+          <Text style={styles.spirit}>
+            “Toda história começa com{' '}
+            <Text style={styles.spiritEm}>‘Era uma vez’</Text> — o ritual que acende
+            a imaginação da criança e tranquiliza o coração dos pais.”
+          </Text>
+
+          <View style={styles.card} testID="sobre-card-oque">
+            <Text style={styles.cardTitle}>O que é</Text>
+            <Text style={styles.cardText}>
+              Histórias infantis criadas com um modelo previamente treinado para
+              trazer uma linguagem adequada, histórias bem estruturadas e sempre
+              ensinar valores para nossos filhos.
+            </Text>
           </View>
-        </LinearGradient>
 
-        <Text style={styles.spirit}>
-          “Toda história começa com{' '}
-          <Text style={styles.spiritEm}>‘Era uma vez’</Text> — o ritual que acende
-          a imaginação da criança e tranquiliza o coração dos pais.”
-        </Text>
+          <View style={styles.card} testID="sobre-card-paraquem">
+            <Text style={styles.cardTitle}>Para quem é</Text>
+            <Text style={styles.cardText}>
+              Famílias que querem transformar a hora de dormir num momento de
+              carinho, escuta e formação.
+            </Text>
+          </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Para quem é</Text>
-          <Text style={styles.cardText}>
-            Para famílias com crianças de 3 a 6 anos que querem transformar a hora
-            de dormir num momento de carinho, escuta e formação. Cada história tem
-            menos de 5 minutos, começa com “Era uma vez” e ensina um valor — coragem,
-            humildade, generosidade, gratidão e muitos outros.
+          <View style={styles.card} testID="sobre-card-comonavegar">
+            <Text style={styles.cardTitle}>Como navegar</Text>
+            <Text style={styles.cardText}>
+              Percorra as prateleiras no{' '}
+              <Text style={styles.cardEm}>Início</Text>, use o{' '}
+              <Text style={styles.cardEm}>Explorar</Text> para navegar entre
+              universos e valores e veja em seu{' '}
+              <Text style={styles.cardEm}>Perfil</Text> as histórias que já leu,
+              curtiu e suas favoritas.
+            </Text>
+          </View>
+
+          <View style={styles.versionBox}>
+            <Text style={styles.versionLabel}>Versão</Text>
+            <Text style={styles.versionValue}>{APP_VERSION}</Text>
+          </View>
+
+          <Text style={styles.signature}>
+            Feito com carinho para a hora mais bonita do dia.
           </Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Como navegar</Text>
-          <Text style={styles.cardText}>
-            Explore as prateleiras na <Text style={styles.cardEm}>Início</Text>,
-            mergulhe nos universos pelo <Text style={styles.cardEm}>Universos</Text>,
-            descubra histórias por <Text style={styles.cardEm}>Valor</Text> e guarde
-            as preferidas em <Text style={styles.cardEm}>Favoritos</Text>. A qualquer
-            momento, ative o <Text style={styles.cardEm}>Modo Noite</Text> dentro
-            de uma história para deixar a tela ainda mais aconchegante.
-          </Text>
-        </View>
-
-        <View style={styles.versionBox}>
-          <Text style={styles.versionLabel}>Versão</Text>
-          <Text style={styles.versionValue}>{APP_VERSION}</Text>
-        </View>
-
-        <Text style={styles.signature}>Feito com carinho para a hora mais bonita do dia.</Text>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </View>
+    </ScreenBg>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.noiteAmeixa },
-  heroCard: {
-    borderRadius: radius.lg,
-    paddingVertical: spacing.xl,
-    paddingHorizontal: spacing.lg,
+  hero: {
     alignItems: 'center',
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(233,178,76,0.25)',
-    marginBottom: spacing.xl,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 14,
+    paddingVertical: spacing.md,
+    marginBottom: spacing.lg,
   },
-  brandRow: {
-    width: 96, height: 96, borderRadius: 48,
-    backgroundColor: 'rgba(233,178,76,0.12)',
-    borderWidth: 1, borderColor: 'rgba(233,178,76,0.45)',
-    alignItems: 'center', justifyContent: 'center',
+  heroTitle: {
+    fontFamily: fonts.tituloNarrativa,
+    fontStyle: 'italic',
+    fontSize: 30,
+    color: colors.cremeForte,
+    lineHeight: 34,
   },
+  heroTitleAccent: { color: colors.douradoEstrela },
+
   spirit: {
     fontFamily: fonts.tituloNarrativa,
+    fontStyle: 'italic',
     color: colors.cremeLencol,
-    fontSize: 20, lineHeight: 30,
+    fontSize: 18,
+    lineHeight: 27,
     textAlign: 'center',
     marginBottom: spacing.xl,
     paddingHorizontal: spacing.sm,
   },
   spiritEm: { color: colors.douradoEstrela },
+
   card: {
-    backgroundColor: colors.violetaCrepusculo,
+    backgroundColor: 'rgba(255,255,255,0.05)',
     borderRadius: radius.lg,
     padding: spacing.lg,
     marginBottom: spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(246,239,225,0.08)',
+    borderColor: 'rgba(200,178,230,0.16)',
   },
   cardTitle: {
     fontFamily: fonts.titulo,
-    color: colors.cremeLencol,
+    color: colors.douradoEstrela,
     fontSize: 20,
     marginBottom: spacing.sm,
   },
-  cardText: { fontFamily: fonts.texto, color: colors.lilasSonho, fontSize: 14, lineHeight: 22 },
+  cardText: {
+    fontFamily: fonts.texto,
+    color: colors.lilasSonho,
+    fontSize: 14,
+    lineHeight: 22,
+  },
   cardEm: { color: colors.cremeLencol, fontFamily: fonts.textoBold },
+
   versionBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -127,12 +143,23 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(233,178,76,0.3)',
     marginTop: spacing.md,
   },
-  versionLabel: { fontFamily: fonts.textoExtra, color: colors.cremeLencol, fontSize: 11, letterSpacing: 0.6 },
-  versionValue: { fontFamily: fonts.textoBold, color: colors.douradoEstrela, fontSize: 14 },
+  versionLabel: {
+    fontFamily: fonts.textoExtra,
+    color: colors.cremeLencol,
+    fontSize: 11,
+    letterSpacing: 0.6,
+  },
+  versionValue: {
+    fontFamily: fonts.textoBold,
+    color: colors.douradoEstrela,
+    fontSize: 14,
+  },
   signature: {
     fontFamily: fonts.tituloNarrativa,
+    fontStyle: 'italic',
     color: colors.lilasSonho,
-    fontSize: 14, textAlign: 'center',
+    fontSize: 14,
+    textAlign: 'center',
     marginTop: spacing.xl,
   },
 });

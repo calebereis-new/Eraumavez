@@ -34,7 +34,7 @@ export function BottomBar({ state, descriptors, navigation }: BottomTabBarProps)
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const focused = state.index === index;
-        const color = focused ? colors.douradoEstrela : colors.lilasSonho;
+        const color = focused ? colors.douradoEstrela : colors.ameixaPro;
         const label =
           (typeof options.tabBarLabel === 'string' && options.tabBarLabel) ||
           options.title ||
@@ -85,8 +85,8 @@ export function BottomBar({ state, descriptors, navigation }: BottomTabBarProps)
 const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
-    backgroundColor: colors.noiteAmeixa,
-    borderTopColor: 'rgba(246,239,225,0.08)',
+    backgroundColor: colors.noiteFundo,
+    borderTopColor: 'rgba(200,178,230,0.12)',
     borderTopWidth: 1,
     paddingHorizontal: 4,
   },
